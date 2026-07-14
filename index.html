@@ -60,12 +60,12 @@ body{background:#1a1a2e;font-family:'Segoe UI',sans-serif;display:flex;justify-c
       <button class="big-btn record" id="recordBtn">🎤</button>
     </div>
     <div class="effects" id="effectsGrid">
-      <div class="effect-btn" data-effect="robot"><div class="emoji">🤖</div>Robot<div class="label">beep boop</div></div>
+      <div class="effect-btn" data-effect="stutter"><div class="emoji">🤖</div>Stutter<div class="label">glitch glitch</div></div>
       <div class="effect-btn" data-effect="monster"><div class="emoji">👹</div>Monster<div class="label">grrr!</div></div>
       <div class="effect-btn" data-effect="chipmunk"><div class="emoji">🐿️</div>Chipmunk<div class="label">squeak!</div></div>
       <div class="effect-btn" data-effect="echo"><div class="emoji">🗣️</div>Echo<div class="label">hello hello</div></div>
-      <div class="effect-btn" data-effect="alien"><div class="emoji">👽</div>Alien<div class="label">wobble</div></div>
-      <div class="effect-btn" data-effect="ghost"><div class="emoji">👻</div>Ghost<div class="label">wooooh</div></div>
+      <div class="effect-btn" data-effect="underwater"><div class="emoji">🌊</div>Underwater<div class="label">blub blub</div></div>
+      <div class="effect-btn" data-effect="spooky"><div class="emoji">👻</div>Spooky<div class="label">wooooh</div></div>
     </div>
   </div>
   <div class="bottom-bar">
@@ -93,12 +93,30 @@ function resizeViz(){var a=canvas.parentElement;canvas.width=a.clientWidth;canva
 resizeViz();window.addEventListener('resize',resizeViz);
 
 var EFFECTS={
-  robot:{apply:function(b,sr){
+  stutter:{apply:function(b,sr){
+    // Repeat tiny slices for a glitchy robot sound
+    var len=Math.floor(sr*0.08),o=new Float32Array(b.length);
+    for(var i=0;i<b.length;i+=len){
+      var slice=Math.min(len,b.length-i);
+      // Repeat first 30% of each slice 3 times
+      var repLen=Math.floor(slice*0.3);
+      for(var r=0;r<3&&i+r*repLen<b.length;r++){
+        for(var j=0;j<repLen&&i+r*repLen+j<b.length;j++){
+          o[i+r*repLen+j]=b[i+j];
+        }
+      }
+    }
+    return o;
+  }},
+  underwater:{apply:function(b,sr){
     var o=new Float32Array(b.length);
     for(var i=0;i<b.length;i++){
-      var m=Math.sin(i*2*Math.PI*60/sr);
-      var c=Math.round(b[i]*6)/6;
-      o[i]=(c*0.7+m*0.3)*0.8;
+      // LFO oscillating between 0.1 and 0.9
+      var lfo=Math.sin(i*2*Math.PI*3/sr)*0.4+0.5;
+      // Comb filter that shifts with LFO
+      var delay=Math.floor(lfo*300+50);
+      var wet=i>=delay?b[i-delay]*0.6:0;
+      o[i]=b[i]*0.5+wet*0.5;
     }
     return o;
   }},
@@ -128,26 +146,16 @@ var EFFECTS={
     }
     return o;
   }},
-  alien:{apply:function(b,sr){
+  spooky:{apply:function(b,sr){
+    // Tremolo + pitch wobble for spooky wavering
     var o=new Float32Array(b.length);
     for(var i=0;i<b.length;i++){
-      var l=Math.sin(i*2*Math.PI*2.5/sr)*0.4+0.5;
-      o[i]=b[i]*0.6+b[Math.max(0,i-Math.floor(l*200+20))]*0.4;
-    }
-    return o;
-  }},
-  ghost:{apply:function(b,sr){
-    var o=new Float32Array(b.length+sr);
-    o.set(b);
-    for(var i=Math.floor(sr*0.02);i<b.length+sr;i++){
-      o[i]=(o[i]||0)+(i-Math.floor(sr*0.02)<b.length?b[i-Math.floor(sr*0.02)]*0.3:0);
-    }
-    for(var i=0;i<o.length;i++){
-      var e=1;
-      if(i<sr*0.05)e=i/(sr*0.05);
-      if(i>o.length-sr*0.1)e=(o.length-i)/(sr*0.1);
-      var w=Math.sin(i*2*Math.PI*1.5/sr)*0.003;
-      o[i]=o[Math.min(o.length-1,Math.max(0,i+Math.floor(w*sr)))]*e*0.6;
+      // Volume tremolo at 4Hz
+      var trem=Math.sin(i*2*Math.PI*4/sr)*0.3+0.7;
+      // Pitch wobble via delay modulation
+      var wobble=Math.floor(Math.sin(i*2*Math.PI*2.5/sr)*150+200);
+      var src=Math.max(0,i-wobble);
+      o[i]=b[src]*trem;
     }
     return o;
   }}
