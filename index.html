@@ -8,39 +8,44 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#1a1a2e;font-family:'Segoe UI',sans-serif;display:flex;justify-content:center;align-items:center;min-height:100dvh;overflow:hidden;user-select:none}
 .game{width:100vw;height:100dvh;max-width:600px;background:linear-gradient(180deg,#16213e,#0f3460);display:flex;flex-direction:column;position:relative;overflow:hidden}
-.header{text-align:center;padding:12px;flex-shrink:0}
-.header h1{color:#f1c40f;font-size:clamp(20px,5vw,30px);font-weight:900;letter-spacing:2px}
-.header p{color:#888;font-size:clamp(10px,2.5vw,13px);margin-top:2px}
-.content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 16px;gap:12px}
-.viz-area{width:100%;height:clamp(80px,20vh,150px);background:rgba(0,0,0,0.3);border-radius:16px;overflow:hidden;position:relative;border:2px solid rgba(78,204,163,0.3)}
-.viz-area canvas{width:100%;height:100%;display:block}
-.viz-placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#555;font-size:clamp(12px,3vw,16px);pointer-events:none}
-.status{color:#aaa;font-size:clamp(12px,3vw,14px);text-align:center;min-height:1.5em}
-.big-btn{width:clamp(80px,20vw,120px);height:clamp(80px,20vw,120px);border-radius:50%;border:none;font-size:clamp(32px,8vw,50px);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,0,0,0.3)}
-.big-btn.record{background:linear-gradient(135deg,#e74c3c,#c0392b);color:#fff}
-.big-btn.record.recording{background:linear-gradient(135deg,#c0392b,#900);animation:pulse 0.6s ease infinite}
-.big-btn.play{background:linear-gradient(135deg,#4ecca3,#2ecc71);color:#fff}
-.big-btn.play.playing{background:linear-gradient(135deg,#2ecc71,#1a9e4a);animation:pulseGreen 0.6s ease infinite}
+.header{text-align:center;padding:8px 12px;flex-shrink:0;display:flex;justify-content:space-between;align-items:center}
+.header h1{color:#f1c40f;font-size:clamp(16px,4vw,24px);font-weight:900}
+.header .hint{color:#666;font-size:clamp(10px,2vw,12px)}
+.content{flex:1;display:flex;flex-direction:column;align-items:center;padding:2px 8px;gap:4px;position:relative;overflow:hidden}
+.viz-area{width:100%;flex:1;position:relative;background:#0a0a1e;border-radius:12px;overflow:hidden;border:2px solid rgba(78,204,163,0.2);min-height:0}
+.viz-area canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.viz-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#555;font-size:clamp(12px,3vw,14px);pointer-events:none}
+.viz-placeholder .big{font-size:clamp(32px,8vw,50px);margin-bottom:4px}
+.camera-controls{display:flex;gap:8px;justify-content:center;padding:4px;flex-shrink:0;width:100%}
+.cam-btn{background:rgba(255,255,255,0.1);border:none;border-radius:10px;color:#aaa;padding:6px 14px;font-size:clamp(11px,2.5vw,13px);cursor:pointer;display:flex;align-items:center;gap:4px}
+.cam-btn:active{background:rgba(255,255,255,0.2)}
+.cam-btn.active{background:rgba(78,204,163,0.2);color:#4ecca3}
+.status{color:#aaa;font-size:clamp(11px,2.5vw,13px);text-align:center;min-height:1.2em;width:100%;padding:0 8px}
+.controls-row{display:flex;align-items:center;justify-content:center;gap:12px;padding:4px;flex-shrink:0;width:100%}
+.big-btn{width:clamp(56px,14vw,80px);height:clamp(56px,14vw,80px);border-radius:50%;border:none;font-size:clamp(24px,6vw,38px);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 15px rgba(0,0,0,0.3);flex-shrink:0}
+.big-btn.record{background:linear-gradient(135deg,#e74c3c,#c0392b)}
+.big-btn.record.recording{animation:pulse 0.6s ease infinite}
+.big-btn.play{background:linear-gradient(135deg,#4ecca3,#2ecc71)}
+.big-btn.play.playing{animation:pulseGreen 0.6s ease infinite}
 .big-btn:active{transform:scale(0.9)}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(231,76,60,0.4)}50%{box-shadow:0 0 0 20px rgba(231,76,60,0)}}
-@keyframes pulseGreen{0%,100%{box-shadow:0 0 0 0 rgba(78,204,163,0.4)}50%{box-shadow:0 0 0 20px rgba(78,204,163,0)}}
-.effects{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(6px,2vw,10px);width:100%;max-width:360px;flex-shrink:0}
-.effect-btn{aspect-ratio:1;border-radius:16px;border:2px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:#fff;cursor:pointer;transition:all 0.2s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:clamp(10px,2.5vw,13px);font-weight:600}
-.effect-btn .emoji{font-size:clamp(22px,5.5vw,36px)}
-.effect-btn.active{border-color:#f1c40f;background:rgba(241,196,15,0.15);box-shadow:0 0 20px rgba(241,196,15,0.2)}
-.effect-btn:active{transform:scale(0.95)}
-.effect-btn .label{font-size:clamp(9px,2vw,12px);color:#aaa;font-weight:400}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(231,76,60,0.4)}50%{box-shadow:0 0 0 16px rgba(231,76,60,0)}}
+@keyframes pulseGreen{0%,100%{box-shadow:0 0 0 0 rgba(78,204,163,0.4)}50%{box-shadow:0 0 0 16px rgba(78,204,163,0)}}
+.effects{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(4px,1.5vw,8px);width:100%;max-width:400px;flex-shrink:0;padding:2px 8px}
+.effect-btn{border-radius:12px;border:2px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:#fff;cursor:pointer;transition:all 0.2s;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px 2px;gap:0;font-size:clamp(9px,2vw,12px);font-weight:600;aspect-ratio:1}
+.effect-btn .emoji{font-size:clamp(18px,4.5vw,30px);line-height:1}
+.effect-btn .label{font-size:clamp(7px,1.6vw,10px);color:#777;font-weight:400;white-space:nowrap}
+.effect-btn.active{border-color:#f1c40f;background:rgba(241,196,15,0.15);box-shadow:0 0 15px rgba(241,196,15,0.15)}
 .effect-btn.active .label{color:#f1c40f}
-.bottom-bar{display:flex;justify-content:center;gap:20px;padding:8px 16px 16px;flex-shrink:0}
-.reset-btn{background:rgba(255,255,255,0.1);border:none;border-radius:12px;color:#aaa;padding:8px 20px;font-size:clamp(11px,2.5vw,14px);cursor:pointer;display:flex;align-items:center;gap:4px}
-.reset-btn:active{background:rgba(255,255,255,0.2)}
+.bottom-bar{display:flex;justify-content:center;gap:12px;padding:6px 12px 10px;flex-shrink:0}
+.reset-btn{background:rgba(255,255,255,0.08);border:none;border-radius:10px;color:#888;padding:6px 16px;font-size:clamp(10px,2.2vw,13px);cursor:pointer;display:flex;align-items:center;gap:4px}
+.reset-btn:active{background:rgba(255,255,255,0.15)}
 .overlay{position:absolute;inset:0;z-index:100;background:rgba(10,10,30,0.95);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:30px;text-align:center;transition:opacity 0.4s;opacity:0;pointer-events:none}
 .overlay.active{opacity:1;pointer-events:all}
 .overlay .logo{font-size:clamp(50px,14vw,80px);margin-bottom:8px}
 .overlay h2{font-size:clamp(24px,7vw,40px);color:#f1c40f;margin-bottom:4px}
-.overlay p{color:#aaa;font-size:clamp(13px,3vw,16px);max-width:280px;margin-bottom:8px;line-height:1.4}
-.overlay .mic-note{color:#555;font-size:clamp(11px,2.5vw,13px);margin-bottom:16px}
-.start-btn{padding:16px 48px;font-size:clamp(18px,4vw,24px);font-weight:700;background:linear-gradient(135deg,#f1c40f,#f39c12);color:#1a1a2e;border:none;border-radius:16px;cursor:pointer;letter-spacing:2px;box-shadow:0 6px 25px rgba(241,196,15,0.3)}
+.overlay p{color:#aaa;font-size:clamp(13px,3vw,16px);max-width:280px;margin-bottom:6px;line-height:1.4}
+.overlay .mic-note{color:#555;font-size:clamp(11px,2.5vw,13px);margin-bottom:12px}
+.start-btn{padding:14px 44px;font-size:clamp(18px,4vw,24px);font-weight:700;background:linear-gradient(135deg,#f1c40f,#f39c12);color:#1a1a2e;border:none;border-radius:16px;cursor:pointer;letter-spacing:2px;box-shadow:0 6px 25px rgba(241,196,15,0.3)}
 .start-btn:active{transform:scale(0.95)}
 </style>
 </head>
@@ -48,24 +53,36 @@ body{background:#1a1a2e;font-family:'Segoe UI',sans-serif;display:flex;justify-c
 <div class="game">
   <div class="header">
     <h1>🎤 VoiceMagic</h1>
-    <p>Record your voice and add fun effects!</p>
+    <div class="hint">Record ▶ Pick effect ▶ Watch it sing!</div>
   </div>
   <div class="content">
-    <div class="viz-area">
+    <div class="viz-area" id="vizArea">
       <canvas id="vizCanvas"></canvas>
-      <div class="viz-placeholder" id="vizPlaceholder">🎤 Say something!</div>
+      <div class="viz-placeholder" id="vizPlaceholder">
+        <div class="big">🎤</div>
+        <div>Say something then pick a pic!</div>
+      </div>
+      <video id="camVideo" style="display:none"></video>
     </div>
-    <div class="status" id="statusText">Tap 🎤 to start recording</div>
-    <div id="actionArea">
+    <div class="camera-controls">
+      <button class="cam-btn" id="camBtn">📷 Take Pic</button>
+      <button class="cam-btn" id="lineBtn">✏️ Draw Line</button>
+      <button class="cam-btn" id="clearPicBtn">🗑️ Clear</button>
+    </div>
+    <div class="status" id="statusText">Tap 🎤 to record!</div>
+    <div class="controls-row">
       <button class="big-btn record" id="recordBtn">🎤</button>
     </div>
     <div class="effects" id="effectsGrid">
-      <div class="effect-btn" data-effect="stutter"><div class="emoji">🤖</div>Stutter<div class="label">glitch glitch</div></div>
-      <div class="effect-btn" data-effect="monster"><div class="emoji">👹</div>Monster<div class="label">grrr!</div></div>
-      <div class="effect-btn" data-effect="chipmunk"><div class="emoji">🐿️</div>Chipmunk<div class="label">squeak!</div></div>
-      <div class="effect-btn" data-effect="echo"><div class="emoji">🗣️</div>Echo<div class="label">hello hello</div></div>
-      <div class="effect-btn" data-effect="underwater"><div class="emoji">🌊</div>Underwater<div class="label">blub blub</div></div>
-      <div class="effect-btn" data-effect="spooky"><div class="emoji">👻</div>Spooky<div class="label">wooooh</div></div>
+      <div class="effect-btn" data-effect="monster"><div class="emoji">👹</div>Monster<div class="label">deeper</div></div>
+      <div class="effect-btn" data-effect="chipmunk"><div class="emoji">🐿️</div>Chipmunk<div class="label">squeaky</div></div>
+      <div class="effect-btn" data-effect="stutter"><div class="emoji">🤖</div>Stutter<div class="label">glitchy</div></div>
+      <div class="effect-btn" data-effect="echo"><div class="emoji">🗣️</div>Echo<div class="label">repeat</div></div>
+      <div class="effect-btn" data-effect="underwater"><div class="emoji">🌊</div>Bubbles<div class="label">blub</div></div>
+      <div class="effect-btn" data-effect="spooky"><div class="emoji">👻</div>Spooky<div class="label">tremble</div></div>
+      <div class="effect-btn" data-effect="bubble"><div class="emoji">🫧</div>Bubble<div class="label">pop pop</div></div>
+      <div class="effect-btn" data-effect="radio"><div class="emoji">📻</div>Radio<div class="label">crackle</div></div>
+      <div class="effect-btn" data-effect="nervous"><div class="emoji">😬</div>Nervous<div class="label">shaky</div></div>
     </div>
   </div>
   <div class="bottom-bar">
@@ -75,8 +92,8 @@ body{background:#1a1a2e;font-family:'Segoe UI',sans-serif;display:flex;justify-c
   <div class="overlay active" id="startOverlay">
     <div class="logo">🎤</div>
     <h2>VoiceMagic</h2>
-    <p>Record your voice and magically transform it!</p>
-    <div class="mic-note">🔊 Microphone access required</div>
+    <p>Record your voice, take a picture, and watch it sing!</p>
+    <div class="mic-note">🔊 Microphone & Camera access required</div>
     <button class="start-btn" id="startBtn">▶ START</button>
   </div>
 </div>
@@ -84,114 +101,208 @@ body{background:#1a1a2e;font-family:'Segoe UI',sans-serif;display:flex;justify-c
 <script>
 var audioCtx=null,mediaRecorder=null,recordedChunks=[],recordedBuffer=null;
 var isRecording=false,isPlaying=false,hasRecording=false,currentEffect=null;
-var stream=null,analyserNode=null,animFrame=null,playSource=null;
-var recordBtn=document.getElementById('recordBtn'),statusText=document.getElementById('statusText');
+var stream=null,recAnalyser=null,playAnalyser=null,animFrame=null,playSource=null;
 var canvas=document.getElementById('vizCanvas'),ctx=canvas.getContext('2d');
-var vizPlaceholder=document.getElementById('vizPlaceholder');
+var vizArea=document.getElementById('vizArea'),vizPlace=document.getElementById('vizPlaceholder');
+var recordBtn=document.getElementById('recordBtn'),statusText=document.getElementById('statusText');
+var camBtn=document.getElementById('camBtn'),lineBtn=document.getElementById('lineBtn'),clearBtn=document.getElementById('clearPicBtn');
+var camVideo=document.getElementById('camVideo');
 
-function resizeViz(){var a=canvas.parentElement;canvas.width=a.clientWidth;canvas.height=a.clientHeight;}
+// Photo state
+var photoData=null,lineY=0,hasLine=false,lemonAnimId=null;
+var camStream=null,camActive=false;
+var photoCanvas=document.createElement('canvas'),photoCtx=photoCanvas.getContext('2d');
+var lineCanvas=document.createElement('canvas'),lineCtx=lineCanvas.getContext('2d');
+
+function resizeViz(){canvas.width=vizArea.clientWidth;canvas.height=vizArea.clientHeight;}
 resizeViz();window.addEventListener('resize',resizeViz);
 
+// ========== EFFECTS ==========
 var EFFECTS={
-  stutter:{apply:function(b,sr){
-    // Repeat tiny slices for a glitchy robot sound
-    var len=Math.floor(sr*0.08),o=new Float32Array(b.length);
-    for(var i=0;i<b.length;i+=len){
-      var slice=Math.min(len,b.length-i);
-      // Repeat first 30% of each slice 3 times
-      var repLen=Math.floor(slice*0.3);
-      for(var r=0;r<3&&i+r*repLen<b.length;r++){
-        for(var j=0;j<repLen&&i+r*repLen+j<b.length;j++){
-          o[i+r*repLen+j]=b[i+j];
-        }
-      }
-    }
-    return o;
-  }},
-  underwater:{apply:function(b,sr){
-    var o=new Float32Array(b.length);
-    for(var i=0;i<b.length;i++){
-      // LFO oscillating between 0.1 and 0.9
-      var lfo=Math.sin(i*2*Math.PI*3/sr)*0.4+0.5;
-      // Comb filter that shifts with LFO
-      var delay=Math.floor(lfo*300+50);
-      var wet=i>=delay?b[i-delay]*0.6:0;
-      o[i]=b[i]*0.5+wet*0.5;
-    }
-    return o;
-  }},
   monster:{apply:function(b,sr){
     var l=Math.floor(b.length*1.5),o=new Float32Array(l);
-    for(var i=0;i<l;i++){
-      var si=Math.floor(i*b.length/l),f=i*b.length/l-si;
-      o[i]=si+1<b.length?b[si]*(1-f)+b[si+1]*f:b[si];
-    }
+    for(var i=0;i<l;i++){var si=Math.floor(i*b.length/l),f=i*b.length/l-si;o[i]=si+1<b.length?b[si]*(1-f)+b[si+1]*f:b[si];}
     return o;
   }},
   chipmunk:{apply:function(b,sr){
     var l=Math.floor(b.length*0.6),o=new Float32Array(l);
-    for(var i=0;i<l;i++){
-      var si=Math.floor(i*b.length/l),f=i*b.length/l-si;
-      o[i]=si+1<b.length?b[si]*(1-f)+b[si+1]*f:b[si];
-    }
+    for(var i=0;i<l;i++){var si=Math.floor(i*b.length/l),f=i*b.length/l-si;o[i]=si+1<b.length?b[si]*(1-f)+b[si+1]*f:b[si];}
+    return o;
+  }},
+  stutter:{apply:function(b,sr){
+    var len=Math.floor(sr*0.07),o=new Float32Array(b.length);
+    for(var i=0;i<b.length;i+=len){var sl=Math.min(len,b.length-i),rp=Math.floor(sl*0.25);for(var r=0;r<4&&i+r*rp<b.length;r++)for(var j=0;j<rp&&i+r*rp+j<b.length;j++)o[i+r*rp+j]=b[i+j]*(1-r*0.2);}
     return o;
   }},
   echo:{apply:function(b,sr){
-    var d=Math.floor(sr*0.25),o=new Float32Array(b.length+d*3);
-    o.set(b);
-    for(var i=0;i<b.length;i++){
-      if(i+d<o.length)o[i+d]+=b[i]*0.45;
-      if(i+d*2<o.length)o[i+d*2]+=b[i]*0.2;
-      if(i+d*3<o.length)o[i+d*3]+=b[i]*0.08;
-    }
+    var d=Math.floor(sr*0.25),o=new Float32Array(b.length+d*4);o.set(b);
+    for(var i=0;i<b.length;i++){if(i+d<o.length)o[i+d]+=b[i]*0.45;if(i+d*2<o.length)o[i+d*2]+=b[i]*0.2;if(i+d*3<o.length)o[i+d*3]+=b[i]*0.08;}
+    return o;
+  }},
+  underwater:{apply:function(b,sr){
+    var o=new Float32Array(b.length);
+    for(var i=0;i<b.length;i++){var l=Math.sin(i*2*Math.PI*3/sr)*0.4+0.5;var d=Math.floor(l*300+50);o[i]=b[i]*0.5+(i>=d?b[i-d]*0.6:0)*0.5;}
     return o;
   }},
   spooky:{apply:function(b,sr){
-    // Tremolo + pitch wobble for spooky wavering
     var o=new Float32Array(b.length);
-    for(var i=0;i<b.length;i++){
-      // Volume tremolo at 4Hz
-      var trem=Math.sin(i*2*Math.PI*4/sr)*0.3+0.7;
-      // Pitch wobble via delay modulation
-      var wobble=Math.floor(Math.sin(i*2*Math.PI*2.5/sr)*150+200);
-      var src=Math.max(0,i-wobble);
-      o[i]=b[src]*trem;
-    }
+    for(var i=0;i<b.length;i++){var t=Math.sin(i*2*Math.PI*4/sr)*0.3+0.7;var w=Math.floor(Math.sin(i*2*Math.PI*2.5/sr)*150+200);o[i]=b[Math.max(0,i-w)]*t;}
+    return o;
+  }},
+  bubble:{apply:function(b,sr){
+    var o=new Float32Array(b.length);var size=Math.floor(sr*0.03);
+    for(var i=0;i<b.length;i+=size){var env=0;for(var j=0;j<size&&i+j<b.length;j++){env=1-Math.abs(j-size/2)/(size/2);o[i+j]=b[i+j]*env*env;}}
+    return o;
+  }},
+  radio:{apply:function(b,sr){
+    var o=new Float32Array(b.length);
+    for(var i=0;i<b.length;i++){var noise=(Math.random()-0.5)*0.15;var cr=Math.round(b[i]*4)/4;o[i]=cr*0.7+noise;}
+    return o;
+  }},
+  nervous:{apply:function(b,sr){
+    var o=new Float32Array(b.length);
+    for(var i=0;i<b.length;i++){var shake=Math.sin(i*2*Math.PI*20/sr)*80+Math.sin(i*2*Math.PI*15/sr)*50;var src=Math.max(0,Math.min(b.length-1,i+Math.floor(shake)));o[i]=b[src];}
     return o;
   }}
 };
 
-function drawViz(){
-  if(!analyserNode||!isRecording){drawEmptyViz();return;}
-  var d=new Uint8Array(analyserNode.frequencyBinCount);
-  analyserNode.getByteTimeDomainData(d);
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  ctx.lineWidth=2;ctx.strokeStyle='#4ecca3';ctx.beginPath();
-  var sw=canvas.width/d.length,x=0;
-  for(var i=0;i<d.length;i++){var v=d[i]/128.0;ctx.lineTo(x,v*canvas.height/2);x+=sw;}
-  ctx.stroke();
-  animFrame=requestAnimationFrame(drawViz);
+// ========== LEMON DRAWING ==========
+function drawLemon(cx,cy,w,h,fillAmt){
+  // Draw half-lemon slice (top half is the lemon rind, bottom half fills black)
+  ctx.save();
+  // Lemon rind (yellow outer arc - top half)
+  ctx.beginPath();ctx.ellipse(cx,cy,w/2,h/2,0,Math.PI,0);ctx.closePath();
+  ctx.strokeStyle='#f1c40f';ctx.lineWidth=Math.max(3,w*0.06);ctx.stroke();
+  
+  // Lemon pith (inner white - top half)
+  ctx.beginPath();ctx.ellipse(cx,cy,w/2*0.8,h/2*0.8,0,Math.PI,0);ctx.closePath();
+  ctx.strokeStyle='rgba(255,255,255,0.2)';ctx.lineWidth=Math.max(2,w*0.04);ctx.stroke();
+  
+  // Lemon segments (lines radiating from center)
+  var segs=6;
+  for(var i=0;i<segs;i++){
+    var a=Math.PI*(i+0.5)/segs;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a)*w/2*0.7,cy-Math.sin(a)*h/2*0.7);
+    ctx.strokeStyle='rgba(255,255,255,0.08)';ctx.lineWidth=1;ctx.stroke();
+  }
+  
+  // Black fill from bottom up based on sound amplitude
+  var fillH=h*fillAmt;
+  ctx.beginPath();ctx.ellipse(cx,cy+h/2-fillH/2,w/2*0.7,fillH/2,0,0,Math.PI*2);
+  ctx.fillStyle='rgba(0,0,0,0.7)';ctx.fill();
+  
+  ctx.restore();
 }
 
-function drawEmptyViz(){ctx.clearRect(0,0,canvas.width,canvas.height);}
-
-function drawPlayViz(analyser){
-  var d=new Uint8Array(analyser.frequencyBinCount);
-  analyser.getByteTimeDomainData(d);
+// ========== DRAWING LOOP ==========
+function drawScene(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  ctx.lineWidth=2;ctx.strokeStyle='#f1c40f';ctx.beginPath();
-  var sw=canvas.width/d.length,x=0;
-  for(var i=0;i<d.length;i++)ctx.lineTo(x,d[i]/128.0*canvas.height/2),x+=sw;
-  ctx.stroke();
-  if(isPlaying)animFrame=requestAnimationFrame(function(){drawPlayViz(analyser);});
+  
+  // Draw photo if available
+  if(photoData){
+    // Calculate scaling to fit canvas
+    var sc=Math.min(canvas.width/photoCanvas.width,canvas.height/photoCanvas.height);
+    var dw=photoCanvas.width*sc,dh=photoCanvas.height*sc;
+    var dx=(canvas.width-dw)/2,dy=0;
+    ctx.drawImage(photoCanvas,dx,dy,dw,dh);
+    
+    // Draw line if set
+    if(hasLine){
+      ctx.beginPath();ctx.moveTo(0,lineY);ctx.lineTo(canvas.width,lineY);
+      ctx.strokeStyle='#f1c40f';ctx.lineWidth=2;ctx.setLineDash([5,5]);ctx.stroke();ctx.setLineDash([]);
+      var labelY=Math.min(lineY+20,canvas.height-10);
+      ctx.fillStyle='#f1c40f';ctx.font='10px sans-serif';ctx.fillText('✏️ Singing line',5,labelY);
+    }
+  }else{
+    vizPlace.style.display='flex';
+    return;
+  }
+  vizPlace.style.display='none';
 }
 
+function drawSceneWithLemon(amp){
+  drawScene();
+  if(hasLine&&photoData){
+    var lx=canvas.width/2,ly=lineY+(canvas.height-lineY)/2;
+    var lw=canvas.width*0.5,lh=(canvas.height-lineY)*0.6;
+    drawLemon(lx,ly,lw,lh,Math.min(1,amp));
+  }
+}
+
+// ========== CAMERA ==========
+camBtn.addEventListener('click',async function(){
+  if(camActive){
+    // Take photo from video
+    if(camVideo.readyState>=2){
+      photoCanvas.width=camVideo.videoWidth;photoCanvas.height=camVideo.videoHeight;
+      photoCtx.drawImage(camVideo,0,0);
+      photoData=photoCanvas.toDataURL();
+      // Stop camera
+      if(camStream){camStream.getTracks().forEach(function(t){t.stop();});}
+      camStream=null;camActive=false;camVideo.style.display='none';
+      camBtn.textContent='📷 Take Pic';
+      statusText.textContent='✅ Pic taken! Swipe to draw a line';
+      drawScene();
+    }
+  }else{
+    try{
+      camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'}});
+      camVideo.srcObject=camStream;camVideo.play();
+      camActive=true;camVideo.style.display='block';
+      camBtn.textContent='📸 Snap!';
+      statusText.textContent='📷 Smile! Tap Snap! to capture';
+    }catch(e){statusText.textContent='⚠️ Camera not available';}
+  }
+});
+
+// ========== LINE DRAWING ==========
+var isDrawingLine=false,touchStartY=0;
+lineBtn.addEventListener('click',function(){
+  if(!photoData){statusText.textContent='📷 Take a pic first!';return;}
+  isDrawingLine=!isDrawingLine;
+  lineBtn.textContent=isDrawingLine?'✅ Done Line':'✏️ Draw Line';
+  lineBtn.classList.toggle('active',isDrawingLine);
+  if(isDrawingLine)statusText.textContent='👆 Tap on the face where the mouth should sing';
+});
+
+canvas.addEventListener('click',function(e){
+  if(!isDrawingLine||!photoData)return;
+  var rect=canvas.getBoundingClientRect();
+  lineY=e.clientY-rect.top;
+  hasLine=true;
+  isDrawingLine=false;
+  lineBtn.textContent='✏️ Draw Line';
+  lineBtn.classList.remove('active');
+  statusText.textContent='✅ Line set! Now play your recording!';
+  drawScene();
+});
+
+// Touch support for line
+canvas.addEventListener('touchstart',function(e){
+  if(!isDrawingLine||!photoData)return;
+  var t=e.touches[0],rect=canvas.getBoundingClientRect();
+  lineY=t.clientY-rect.top;hasLine=true;
+  isDrawingLine=false;lineBtn.textContent='✏️ Draw Line';lineBtn.classList.remove('active');
+  statusText.textContent='✅ Line set! Now play your recording!';
+  drawScene();
+});
+
+// ========== CLEAR ==========
+clearBtn.addEventListener('click',function(){
+  photoData=null;hasLine=false;lineY=0;
+  if(camStream){camStream.getTracks().forEach(function(t){t.stop();});camStream=null;}
+  camActive=false;camVideo.style.display='none';camBtn.textContent='📷 Take Pic';
+  drawScene();vizPlace.style.display='flex';
+  statusText.textContent='🗑️ Cleared';
+});
+
+// ========== AUDIO ==========
 document.getElementById('startBtn').addEventListener('click',async function(){
   try{
     stream=await navigator.mediaDevices.getUserMedia({audio:true});
     audioCtx=new(window.AudioContext||window.webkitAudioContext)();
     document.getElementById('startOverlay').classList.remove('active');
-    statusText.textContent='Tap 🎤 to start recording';
+    statusText.textContent='Tap 🎤 to record!';
   }catch(e){statusText.textContent='⚠️ Microphone access needed!';}
 });
 
@@ -211,21 +322,19 @@ function startRecording(){
   mediaRecorder.start();
   isRecording=true;
   recordBtn.textContent='⏹️';recordBtn.className='big-btn record recording';
-  statusText.textContent='🔴 Recording... tap ⏹️ to stop';
-  if(!analyserNode){
+  statusText.textContent='🔴 Recording...';
+  if(!recAnalyser){
     var s=audioCtx.createMediaStreamSource(stream);
-    analyserNode=audioCtx.createAnalyser();analyserNode.fftSize=256;
-    s.connect(analyserNode);
+    recAnalyser=audioCtx.createAnalyser();recAnalyser.fftSize=256;
+    s.connect(recAnalyser);
   }
-  drawViz();
+  startRecViz();
 }
 
 function stopRecording(){
   if(mediaRecorder&&mediaRecorder.state!=='inactive')mediaRecorder.stop();
-  isRecording=false;
-  recordBtn.textContent='🎤';recordBtn.className='big-btn record';
-  if(animFrame){cancelAnimationFrame(animFrame);animFrame=null;}
-  drawEmptyViz();
+  isRecording=false;recordBtn.textContent='🎤';recordBtn.className='big-btn record';
+  stopViz();
 }
 
 async function onRecordingComplete(){
@@ -234,11 +343,26 @@ async function onRecordingComplete(){
   var ad=await audioCtx.decodeAudioData(ab);
   recordedBuffer=ad.getChannelData(0);
   hasRecording=true;
-  recordBtn.className='big-btn play';
-  recordBtn.textContent='▶️';
-  statusText.textContent='✅ Got it! Pick an effect or press ▶️ to play';
+  recordBtn.className='big-btn play';recordBtn.textContent='▶️';
+  statusText.textContent='✅ Recorded! Pick an effect & play!';
 }
 
+function startRecViz(){
+  drawScene();
+  if(!recAnalyser||!isRecording){stopViz();return;}
+  var d=new Uint8Array(recAnalyser.frequencyBinCount);
+  recAnalyser.getByteTimeDomainData(d);
+  drawScene();
+  ctx.lineWidth=2;ctx.strokeStyle='#4ecca3';ctx.beginPath();
+  var sw=canvas.width/d.length,x=0;
+  for(var i=0;i<d.length;i++){ctx.lineTo(x,d[i]/128.0*canvas.height/2);x+=sw;}
+  ctx.stroke();
+  animFrame=requestAnimationFrame(startRecViz);
+}
+
+function stopViz(){if(animFrame){cancelAnimationFrame(animFrame);animFrame=null;}}
+
+// ========== PLAYBACK ==========
 document.querySelectorAll('.effect-btn').forEach(function(btn){
   btn.addEventListener('click',function(){
     if(!hasRecording){statusText.textContent='⚠️ Record something first!';return;}
@@ -247,12 +371,12 @@ document.querySelectorAll('.effect-btn').forEach(function(btn){
     if(currentEffect===ef){
       currentEffect=null;
       document.querySelectorAll('.effect-btn').forEach(function(b){b.classList.remove('active');});
-      statusText.textContent='Effect off. Tap ▶️ to play original';
+      statusText.textContent='Effect off';
     }else{
       document.querySelectorAll('.effect-btn').forEach(function(b){b.classList.remove('active');});
       this.classList.add('active');
       currentEffect=ef;
-      statusText.textContent='✨ '+ef.charAt(0).toUpperCase()+ef.slice(1)+' selected!';
+      statusText.textContent='✨ '+this.querySelector('.emoji').textContent+' '+this.childNodes[1].textContent.trim()+'!';
     }
   });
 });
@@ -261,7 +385,6 @@ function playWithEffect(){
   if(!recordedBuffer)return;
   isPlaying=true;
   recordBtn.textContent='⏹️';recordBtn.className='big-btn play playing';
-  vizPlaceholder.style.display='none';
   var sr=audioCtx.sampleRate;
   var data=recordedBuffer;
   if(currentEffect&&EFFECTS[currentEffect])data=EFFECTS[currentEffect].apply(data,sr);
@@ -270,11 +393,27 @@ function playWithEffect(){
   var src=audioCtx.createBufferSource();src.buffer=buf;
   var g=audioCtx.createGain();g.gain.value=0.7;
   src.connect(g);g.connect(audioCtx.destination);
-  var pa=audioCtx.createAnalyser();g.connect(pa);
-  drawPlayViz(pa);
+  playAnalyser=audioCtx.createAnalyser();playAnalyser.fftSize=256;
+  g.connect(playAnalyser);
+  // Lemon animation loop
+  startLemonAnim();
   src.onended=function(){stopPlayback();};
-  src.start();
-  playSource=src;
+  src.start();playSource=src;
+}
+
+function startLemonAnim(){
+  if(lemonAnimId)cancelAnimationFrame(lemonAnimId);
+  function step(){
+    var amp=0;
+    if(playAnalyser){
+      var d=new Uint8Array(playAnalyser.frequencyBinCount);
+      playAnalyser.getByteTimeDomainData(d);
+      for(var i=0;i<d.length;i++){var v=Math.abs(d[i]-128)/128;if(v>amp)amp=v;}
+    }
+    drawSceneWithLemon(amp||0.05);
+    if(isPlaying)lemonAnimId=requestAnimationFrame(step);else{drawScene();lemonAnimId=null;}
+  }
+  step();
 }
 
 function stopPlayback(){
@@ -282,18 +421,24 @@ function stopPlayback(){
   isPlaying=false;
   recordBtn.className=hasRecording?'big-btn play':'big-btn record';
   recordBtn.textContent=hasRecording?'▶️':'🎤';
-  if(animFrame){cancelAnimationFrame(animFrame);animFrame=null;}
-  drawEmptyViz();
-  if(hasRecording)vizPlaceholder.style.display='flex';
+  stopViz();if(lemonAnimId){cancelAnimationFrame(lemonAnimId);lemonAnimId=null;}
+  drawScene();
 }
 
+// ========== RESET ==========
 document.getElementById('resetBtn').addEventListener('click',function(){
   if(isPlaying)stopPlayback();
   document.querySelectorAll('.effect-btn').forEach(function(b){b.classList.remove('active');});
   currentEffect=null;
-  statusText.textContent='🔄 Reset. Tap ▶️ to play original';
+  if(hasRecording){
+    // Reset to re-record
+    hasRecording=false;recordedBuffer=null;
+    recordBtn.className='big-btn record';recordBtn.textContent='🎤';
+  }
+  statusText.textContent='🔄 Reset. Tap 🎤 to record again';
 });
 
+// ========== DOWNLOAD ==========
 document.getElementById('downloadBtn').addEventListener('click',function(){
   if(!hasRecording||!audioCtx){statusText.textContent='⚠️ Record something first!';return;}
   var sr=audioCtx.sampleRate;
