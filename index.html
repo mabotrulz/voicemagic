@@ -332,38 +332,40 @@ function drawPlayFrame(amp){
   ctx.clearRect(0,0,c.width,c.height);
   if(!photoData||!photoW)return;
   
-  // Draw photo centered, maintaining aspect ratio
+  // Use cached image to avoid async loading each frame
+  if(!drawPlayFrame._img){drawPlayFrame._img=new Image();drawPlayFrame._img.src=photoData;}
+  var img=drawPlayFrame._img;
+  if(!img.complete)return;
+  
+  // Draw photo centered
   var sc=Math.min(c.width/photoW,c.height*0.65/photoH);
   var dw=photoW*sc,dh=photoH*sc,dx=(c.width-dw)/2,dy=c.height*0.04;
-  var img=new Image();
-  img.onload=function(){
-    ctx.drawImage(img,dx,dy,dw,dh);
+  ctx.drawImage(img,dx,dy,dw,dh);
+  
+  if(lineY>0){
+    var mappedY=dy+lineY*dh;
     
-    if(lineY>0){
-      var mappedY=dy+lineY*dh;
-      var lw=dw*0.5;var lh=dw*0.18;
-      var lx=dx+dw/2;var ly=mappedY+lh/2;
-      
-      // Lemon rind arc (top half of ellipse)
-      ctx.beginPath();ctx.ellipse(lx,ly,lw/2,lh/2,0,Math.PI,0);ctx.closePath();
-      ctx.strokeStyle='#f1c40f';ctx.lineWidth=Math.max(4,lw*0.035);ctx.stroke();
-      
-      // Inner white line
-      ctx.beginPath();ctx.ellipse(lx,ly,lw/2*0.85,lh/2*0.85,0,Math.PI,0);ctx.closePath();
-      ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.lineWidth=Math.max(2,lw*0.02);ctx.stroke();
-      
-      // Lemon segments
-      for(var i=0;i<5;i++){var a=Math.PI*(i+1)/6;ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(lx+Math.cos(a)*lw/2*0.75,ly-Math.sin(a)*lh/2*0.75);ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=1;ctx.stroke();}
-      
-      // Black fill
-      if(amp>0.02){ctx.save();ctx.beginPath();ctx.ellipse(lx,ly+lh/2-lh/2*amp,lw/2*0.65,lh/2*amp,0,0,Math.PI*2);ctx.closePath();ctx.fillStyle='rgba(0,0,0,0.75)';ctx.fill();ctx.restore();}
-    }
+    // Draw visible dashed line
+    ctx.beginPath();ctx.moveTo(dx,mappedY);ctx.lineTo(dx+dw,mappedY);
+    ctx.strokeStyle='rgba(241,196,15,0.5)';ctx.lineWidth=2;ctx.setLineDash([5,4]);ctx.stroke();ctx.setLineDash([]);
     
-    // Play/Stop button on photo
-    ctx.fillStyle='rgba(0,0,0,0.15)';ctx.font=playing?'clamp(30px,8vw,50px) sans-serif':'clamp(36px,10vw,56px) sans-serif';
-    ctx.textAlign='center';ctx.fillText(playing?'⏹️':'▶️',c.width/2,dy+dh+35);
-  };
-  if(photoData){img.src=photoData;}
+    var lw=dw*0.5;var lh=dw*0.18;
+    var lx=dx+dw/2;var ly=mappedY+lh/2;
+    
+    // Lemon rind arc
+    ctx.beginPath();ctx.ellipse(lx,ly,lw/2,lh/2,0,Math.PI,0);ctx.closePath();
+    ctx.strokeStyle='#f1c40f';ctx.lineWidth=Math.max(4,lw*0.035);ctx.stroke();
+    
+    // Inner white line
+    ctx.beginPath();ctx.ellipse(lx,ly,lw/2*0.85,lh/2*0.85,0,Math.PI,0);ctx.closePath();
+    ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.lineWidth=Math.max(2,lw*0.02);ctx.stroke();
+    
+    // Lemon segments
+    for(var i=0;i<5;i++){var a=Math.PI*(i+1)/6;ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(lx+Math.cos(a)*lw/2*0.75,ly-Math.sin(a)*lh/2*0.75);ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=1;ctx.stroke();}
+    
+    // Black fill
+    if(amp>0.02){ctx.save();ctx.beginPath();ctx.ellipse(lx,ly+lh/2-lh/2*amp,lw/2*0.65,lh/2*amp,0,0,Math.PI*2);ctx.closePath();ctx.fillStyle='rgba(0,0,0,0.75)';ctx.fill();ctx.restore();}
+  }
 }
 
 function stopPlay(){
