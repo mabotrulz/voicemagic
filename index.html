@@ -3,69 +3,75 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>VoiceMagic — Step by Step</title>
+<title>VoiceMagic</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#1a1a2e;font-family:'Segoe UI',sans-serif;display:flex;justify-content:center;align-items:center;min-height:100dvh;overflow:hidden;user-select:none;touch-action:none}
 .game{width:100vw;height:100dvh;max-width:600px;background:linear-gradient(180deg,#16213e,#0f3460);display:flex;flex-direction:column;position:relative;overflow:hidden}
 
-/* ====== STEPS ====== */
-.step{position:absolute;inset:0;display:flex;flex-direction:column;padding:8px;transition:opacity 0.3s,transform 0.3s;opacity:0;pointer-events:none;transform:scale(0.97)}
+.step{position:absolute;inset:0;display:flex;flex-direction:column;transition:opacity 0.3s,transform 0.3s;opacity:0;pointer-events:none;transform:scale(0.96)}
 .step.active{opacity:1;pointer-events:all;transform:scale(1)}
-.step h2{color:#f1c40f;font-size:clamp(18px,5vw,28px);text-align:center;margin:4px 0;flex-shrink:0}
-.step .desc{color:#888;font-size:clamp(11px,2.5vw,14px);text-align:center;margin-bottom:8px;flex-shrink:0}
 
-/* Step 1: Camera */
-.cam-preview{flex:1;background:#0a0a1e;border-radius:12px;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;margin:0 4px;border:2px solid rgba(255,255,255,0.1)}
-.cam-preview video,.cam-preview canvas{width:100%;height:100%;object-fit:contain}
-.cam-btn{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);padding:14px 28px;border-radius:50%;background:linear-gradient(135deg,#f1c40f,#f39c12);border:none;font-size:clamp(22px,6vw,36px);cursor:pointer;box-shadow:0 4px 20px rgba(241,196,15,0.3);width:clamp(60px,16vw,90px);height:clamp(60px,16vw,90px);display:flex;align-items:center;justify-content:center}
-.cam-btn:active{transform:translateX(-50%) scale(0.9)}
-.cam-btn.snap{background:linear-gradient(135deg,#fff,#ddd);color:#333;font-size:clamp(14px,3.5vw,20px);font-weight:700;border-radius:50%}
-.step-btn{background:rgba(255,255,255,0.1);border:none;border-radius:12px;color:#aaa;padding:10px 24px;font-size:clamp(13px,3vw,16px);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;margin:8px auto 0;flex-shrink:0}
-.step-btn.active{background:rgba(78,204,163,0.2);color:#4ecca3}
-.step-btn:active{background:rgba(255,255,255,0.2)}
-.step-btn.primary{background:linear-gradient(135deg,#4ecca3,#2ecc71);color:#1a1a2e;font-weight:700}
+.step-header{text-align:center;padding:6px 12px 2px;flex-shrink:0}
+.step-header h2{color:#f1c40f;font-size:clamp(16px,4.5vw,24px)}
+.step-header .desc{color:#888;font-size:clamp(10px,2.5vw,13px);margin-top:1px}
 
-/* Step 2: Draw line */
-.line-area{flex:1;background:#0a0a1e;border-radius:12px;overflow:hidden;position:relative;margin:0 4px;border:2px solid rgba(255,255,255,0.1)}
-.line-area canvas{width:100%;height:100%;display:block}
+/* Photo container — same across all steps */
+.photo-box{flex:1;margin:4px 8px;border-radius:12px;overflow:hidden;position:relative;background:#0a0a1e;border:2px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center}
+.photo-box canvas,.photo-box video{max-width:100%;max-height:100%;display:block}
 
-/* Step 3: Record */
-.record-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
-.rec-btn{width:clamp(80px,20vw,120px);height:clamp(80px,20vw,120px);border-radius:50%;border:none;font-size:clamp(36px,9vw,55px);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,0,0,0.3)}
-.rec-btn.rec{background:linear-gradient(135deg,#e74c3c,#c0392b)}
-.rec-btn.rec.recording{animation:pulse 0.6s ease infinite}
-.rec-btn.play{background:linear-gradient(135deg,#4ecca3,#2ecc71)}
-.rec-btn.play.playing{animation:pulseGreen 0.6s ease infinite}
-.rec-btn:active{transform:scale(0.9)}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(231,76,60,0.4)}50%{box-shadow:0 0 0 24px rgba(231,76,60,0)}}
-@keyframes pulseGreen{0%,100%{box-shadow:0 0 0 0 rgba(78,204,163,0.4)}50%{box-shadow:0 0 0 24px rgba(78,204,163,0)}}
+/* Big button */
+.big-btn{width:clamp(64px,18vw,100px);height:clamp(64px,18vw,100px);border-radius:50%;border:none;font-size:clamp(28px,8vw,44px);cursor:pointer;display:flex;align-items:center;justify-content:center;margin:6px auto;box-shadow:0 4px 15px rgba(0,0,0,0.3);flex-shrink:0}
+.big-btn:active{transform:scale(0.9)}
+.big-btn.gold{background:linear-gradient(135deg,#f1c40f,#f39c12)}
+.big-btn.green{background:linear-gradient(135deg,#4ecca3,#2ecc71)}
+.big-btn.red{background:linear-gradient(135deg,#e74c3c,#c0392b)}
+.big-btn.red.pulse{animation:pulse 0.6s ease infinite}
+.big-btn.green.pulse{animation:pulseGreen 0.6s ease infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(231,76,60,0.4)}50%{box-shadow:0 0 0 20px rgba(231,76,60,0)}}
+@keyframes pulseGreen{0%,100%{box-shadow:0 0 0 0 rgba(78,204,163,0.4)}50%{box-shadow:0 0 0 20px rgba(78,204,163,0)}}
+
+/* Action row */
+.action-row{display:flex;align-items:center;justify-content:center;gap:12px;padding:2px 8px;flex-shrink:0}
+
+/* Step button */
+.step-btn{padding:10px 28px;border-radius:14px;border:none;font-size:clamp(14px,3.5vw,18px);font-weight:700;cursor:pointer;margin:6px auto;flex-shrink:0;display:flex;align-items:center;gap:6px}
+.step-btn:active{transform:scale(0.95)}
+.step-btn.green{background:linear-gradient(135deg,#4ecca3,#2ecc71);color:#1a1a2e}
+.step-btn.gray{background:rgba(255,255,255,0.1);color:#aaa}
+
+/* Effects horizontal scroll */
+.effects-scroll{display:flex;gap:8px;overflow-x:auto;padding:4px 12px;flex-shrink:0;scroll-behavior:smooth;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.effects-scroll::-webkit-scrollbar{height:4px}
+.effects-scroll::-webkit-scrollbar-thumb{background:#555;border-radius:2px}
+.effects-scroll::-webkit-scrollbar-track{background:transparent}
+.effect-card{scroll-snap-align:start;flex-shrink:0;width:clamp(64px,18vw,90px);border-radius:14px;border:2px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 4px;transition:all 0.2s;gap:2px}
+.effect-card .emoji{font-size:clamp(26px,7vw,40px);line-height:1}
+.effect-card .label{font-size:clamp(11px,2.8vw,14px);font-weight:600}
+.effect-card .sublabel{font-size:clamp(8px,2vw,10px);color:#777;font-weight:400}
+.effect-card.active{border-color:#f1c40f;background:rgba(241,196,15,0.12);box-shadow:0 0 12px rgba(241,196,15,0.2)}
+.effect-card.active .sublabel{color:#f1c40f}
+.effect-card:active{transform:scale(0.93)}
+
+/* Bottom buttons */
+.bot-row{display:flex;justify-content:center;gap:10px;padding:6px 12px 12px;flex-shrink:0;flex-wrap:wrap}
+.bot-btn{background:rgba(255,255,255,0.08);border:none;border-radius:12px;color:#aaa;padding:8px 16px;font-size:clamp(12px,2.8vw,15px);cursor:pointer;display:flex;align-items:center;gap:4px}
+.bot-btn:active{background:rgba(255,255,255,0.15)}
+.bot-btn.green{background:linear-gradient(135deg,#4ecca3,#2ecc71);color:#1a1a2e;font-weight:700}
 
 /* Waveform */
-.waveform{width:90%;height:clamp(60px,15vh,100px);background:rgba(0,0,0,0.3);border-radius:12px;position:relative;overflow:hidden}
-.waveform canvas{width:100%;height:100%;display:block}
-.waveform .hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#555;font-size:clamp(11px,2.5vw,13px)}
+.wave-box{width:clamp(220px,80vw,400px);height:clamp(60px,14vh,90px);background:rgba(0,0,0,0.3);border-radius:12px;overflow:hidden;position:relative;flex-shrink:0}
+.wave-box canvas{width:100%;height:100%;display:block}
+.wave-box .hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#555;font-size:clamp(12px,3vw,15px)}
+.rec-area{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:8px}
+.rec-area .status{color:#aaa;font-size:clamp(12px,3vw,15px);min-height:1.2em}
 
-/* Step 4: Effects + Play */
-.effects-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(4px,1.5vw,8px);padding:0 4px;flex-shrink:0}
-.effect-btn{border-radius:12px;border:2px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:#fff;cursor:pointer;transition:all 0.2s;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px;gap:0;font-size:clamp(9px,2vw,12px);font-weight:600;aspect-ratio:1}
-.effect-btn .emoji{font-size:clamp(20px,5vw,32px);line-height:1}
-.effect-btn .label{font-size:clamp(7px,1.5vw,10px);color:#777;font-weight:400}
-.effect-btn.active{border-color:#f1c40f;background:rgba(241,196,15,0.15);box-shadow:0 0 15px rgba(241,196,15,0.15)}
-.effect-btn.active .label{color:#f1c40f}
-
-.play-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;position:relative;background:#0a0a1e;border-radius:12px;margin:0 4px;overflow:hidden;border:2px solid rgba(255,255,255,0.1)}
-.play-area canvas{width:100%;height:100%;display:block;position:absolute;inset:0}
-.bot-bar{display:flex;justify-content:center;gap:12px;padding:8px;flex-shrink:0;flex-wrap:wrap}
-.bot-bar button{background:rgba(255,255,255,0.08);border:none;border-radius:10px;color:#888;padding:6px 16px;font-size:clamp(10px,2.2vw,13px);cursor:pointer;display:flex;align-items:center;gap:4px}
-.bot-bar button:active{background:rgba(255,255,255,0.15)}
-.bot-bar button.primary{background:linear-gradient(135deg,#4ecca3,#2ecc71);color:#1a1a2e;font-weight:700}
-
-.start-overlay{position:absolute;inset:0;z-index:100;background:rgba(10,10,30,0.95);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:30px;text-align:center;transition:opacity 0.4s;opacity:0;pointer-events:none}
-.start-overlay.active{opacity:1;pointer-events:all}
-.start-overlay .logo{font-size:clamp(50px,14vw,80px);margin-bottom:8px}
-.start-overlay h2{font-size:clamp(24px,7vw,40px);color:#f1c40f;margin-bottom:4px}
-.start-overlay p{color:#aaa;font-size:clamp(13px,3vw,16px);max-width:280px;margin-bottom:6px;line-height:1.4}
+/* Overlay */
+.overlay{position:absolute;inset:0;z-index:100;background:rgba(10,10,30,0.95);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:30px;text-align:center;transition:opacity 0.4s;opacity:0;pointer-events:none}
+.overlay.active{opacity:1;pointer-events:all}
+.overlay .logo{font-size:clamp(50px,14vw,80px);margin-bottom:8px}
+.overlay h2{font-size:clamp(24px,7vw,40px);color:#f1c40f;margin-bottom:4px}
+.overlay p{color:#aaa;font-size:clamp(13px,3vw,16px);max-width:280px;margin-bottom:6px;line-height:1.4}
 .start-btn{padding:14px 44px;font-size:clamp(18px,4vw,24px);font-weight:700;background:linear-gradient(135deg,#f1c40f,#f39c12);color:#1a1a2e;border:none;border-radius:16px;cursor:pointer;letter-spacing:2px;box-shadow:0 6px 25px rgba(241,196,15,0.3)}
 .start-btn:active{transform:scale(0.95)}
 </style>
@@ -75,409 +81,218 @@ body{background:#1a1a2e;font-family:'Segoe UI',sans-serif;display:flex;justify-c
 
 <!-- STEP 1: CAMERA -->
 <div class="step active" id="step1">
-  <h2>📷 Step 1: Take a Picture</h2>
-  <div class="desc">Smile for the camera!</div>
-  <div class="cam-preview" id="camPreview">
-    <video id="camVideo" autoplay playsinline muted style="width:100%;height:100%;object-fit:contain;display:block"></video>
-    <canvas id="photoCanvas" style="display:none"></canvas>
-  </div>
-  <button class="cam-btn" id="camBtn">📸</button>
+  <div class="step-header"><h2>📷 Take a Picture</h2><div class="desc">Smile!</div></div>
+  <div class="photo-box"><video id="camVideo" autoplay playsinline muted style="width:100%;height:100%;object-fit:contain"></video></div>
+  <button class="big-btn gold" id="camBtn">📸</button>
 </div>
 
-<!-- STEP 2: DRAW LINE -->
+<!-- STEP 2: LINE -->
 <div class="step" id="step2">
-  <h2>✏️ Step 2: Draw the Line</h2>
-  <div class="desc">Tap on the face where the mouth should sing</div>
-  <div class="line-area" id="lineArea">
-    <canvas id="lineCanvas"></canvas>
-  </div>
-  <button class="step-btn" id="lineDoneBtn">✅ Done — Next Step</button>
+  <div class="step-header"><h2>✏️ Draw the Line</h2><div class="desc">Tap on the photo where the mouth is</div></div>
+  <div class="photo-box"><canvas id="lineCanvas"></canvas></div>
+  <button class="step-btn green" id="lineDoneBtn">✅ Next: Record</button>
 </div>
 
 <!-- STEP 3: RECORD -->
 <div class="step" id="step3">
-  <h2>🎤 Step 3: Record Your Voice</h2>
-  <div class="desc">Say something fun!</div>
-  <div class="record-area">
-    <div class="waveform" id="waveform">
-      <canvas id="waveCanvas"></canvas>
-      <div class="hint" id="waveHint">🎤 Your voice will appear here</div>
-    </div>
-    <button class="rec-btn rec" id="recBtn">🎤</button>
+  <div class="step-header"><h2>🎤 Record</h2><div class="desc">Say something fun!</div></div>
+  <div class="photo-box"><canvas id="previewCanvas"></canvas></div>
+  <div class="rec-area">
+    <div class="status" id="recStatus">Tap the button to record</div>
+    <div class="wave-box"><canvas id="waveCanvas"></canvas><div class="hint" id="waveHint">🎤</div></div>
+    <button class="big-btn red" id="recBtn">🎤</button>
+    <button class="step-btn green" id="recDoneBtn" style="display:none">✅ Next: Effects!</button>
   </div>
-  <button class="step-btn primary" id="recDoneBtn">▶ Next — Add Effects!</button>
 </div>
 
-<!-- STEP 4: EFFECTS + PLAY -->
+<!-- STEP 4: PLAY -->
 <div class="step" id="step4">
-  <h2>🎵 Step 4: Sing!</h2>
-  <div class="desc">Pick an effect and watch the lemon sing!</div>
-  <div class="play-area" id="playArea">
-    <canvas id="playCanvas"></canvas>
+  <div class="step-header"><h2>🎵 Play & Effects</h2><div class="desc">Pick an effect and listen!</div></div>
+  <div class="photo-box"><canvas id="playCanvas"></canvas></div>
+  <div class="effects-scroll" id="effectsScroll">
+    <div class="effect-card" data-effect="none"><div class="emoji">🔊</div><div class="label">Normal</div><div class="sublabel">no effect</div></div>
+    <div class="effect-card" data-effect="monster"><div class="emoji">👹</div><div class="label">Monster</div><div class="sublabel">deeper</div></div>
+    <div class="effect-card" data-effect="chipmunk"><div class="emoji">🐿️</div><div class="label">Chipmunk</div><div class="sublabel">squeaky</div></div>
+    <div class="effect-card" data-effect="stutter"><div class="emoji">🤖</div><div class="label">Stutter</div><div class="sublabel">glitchy</div></div>
+    <div class="effect-card" data-effect="echo"><div class="emoji">🗣️</div><div class="label">Echo</div><div class="sublabel">repeat</div></div>
+    <div class="effect-card" data-effect="underwater"><div class="emoji">🌊</div><div class="label">Bubbles</div><div class="sublabel">blub</div></div>
+    <div class="effect-card" data-effect="spooky"><div class="emoji">👻</div><div class="label">Spooky</div><div class="sublabel">tremble</div></div>
+    <div class="effect-card" data-effect="bubble"><div class="emoji">🫧</div><div class="label">Bubble</div><div class="sublabel">pop pop</div></div>
+    <div class="effect-card" data-effect="radio"><div class="emoji">📻</div><div class="label">Radio</div><div class="sublabel">crackle</div></div>
+    <div class="effect-card" data-effect="nervous"><div class="emoji">😬</div><div class="label">Nervous</div><div class="sublabel">shaky</div></div>
   </div>
-  <div class="effects-grid" id="effectsGrid">
-    <div class="effect-btn" data-effect="monster"><div class="emoji">👹</div>Monster<div class="label">deeper</div></div>
-    <div class="effect-btn" data-effect="chipmunk"><div class="emoji">🐿️</div>Chipmunk<div class="label">squeaky</div></div>
-    <div class="effect-btn" data-effect="stutter"><div class="emoji">🤖</div>Stutter<div class="label">glitch</div></div>
-    <div class="effect-btn" data-effect="echo"><div class="emoji">🗣️</div>Echo<div class="label">repeat</div></div>
-    <div class="effect-btn" data-effect="underwater"><div class="emoji">🌊</div>Bubbles<div class="label">blub</div></div>
-    <div class="effect-btn" data-effect="spooky"><div class="emoji">👻</div>Spooky<div class="label">tremble</div></div>
-    <div class="effect-btn" data-effect="bubble"><div class="emoji">🫧</div>Bubble<div class="label">pop pop</div></div>
-    <div class="effect-btn" data-effect="radio"><div class="emoji">📻</div>Radio<div class="label">crackle</div></div>
-    <div class="effect-btn" data-effect="nervous"><div class="emoji">😬</div>Nervous<div class="label">shaky</div></div>
-  </div>
-  <div class="bot-bar">
-    <button id="playBtn2">▶️ Play</button>
-    <button id="saveBtn2">💾 Save</button>
-    <button id="restartBtn">🔄 Start Over</button>
+  <div class="bot-row">
+    <button class="bot-btn green" id="playBtn">▶️ Play</button>
+    <button class="bot-btn" id="saveBtn">💾 Save</button>
+    <button class="bot-btn" id="restartBtn">🔄 Again</button>
   </div>
 </div>
 
-<div class="start-overlay active" id="startOverlay">
+<div class="overlay active" id="startOverlay">
   <div class="logo">🎤</div>
   <h2>VoiceMagic</h2>
-  <p>Take a picture, draw a line, record your voice, and watch the lemon sing!</p>
+  <p>Take a picture, draw a singing line, and add funny effects to your voice!</p>
   <button class="start-btn" id="startBtn">▶ START</button>
 </div>
 </div>
 
 <script>
-// ====== STATE ======
-var audioCtx=null,stream=null,recorder=null,chunks=[],audioBuf=null;
-var recording=false,playing=false,hasAudio=false,currentEffect=null;
+var audioCtx=null,micStream=null,recorder=null,chunks=[],audioBuf=null;
+var recording=false,playing=false,hasAudio=false,currentEffect='none';
 var recAnalyser=null,playAnalyser=null,animFrame=null,playSrc=null;
-var photoData=null,lineY=-1,videoStream=null;
-var photoCanvas=document.createElement('canvas'),photoCtx=photoCanvas.getContext('2d');
-var camVideo=document.getElementById('camVideo');
+var photoData=null,lineY=-1,photoW=0,photoH=0,camStream=null;
+var cvs=document.getElementById('lineCanvas'),lineCtx=cvs.getContext('2d');
+var pv=document.getElementById('previewCanvas'),pvCtx=pv.getContext('2d');
+var pl=document.getElementById('playCanvas'),plCtx=pl.getContext('2d');
+var wv=document.getElementById('waveCanvas'),wvCtx=wv.getContext('2d');
 
-// ====== STEP MANAGEMENT ======
-var steps={
-  1:document.getElementById('step1'),
-  2:document.getElementById('step2'),
-  3:document.getElementById('step3'),
-  4:document.getElementById('step4')
-};
+function g(id){return document.getElementById(id);}
 
-function goToStep(n){
-  Object.keys(steps).forEach(function(k){steps[k].classList.toggle('active',parseInt(k)===n);});
+// Steps
+var st={1:g('step1'),2:g('step2'),3:g('step3'),4:g('step4')};
+function go(n){Object.keys(st).forEach(function(k){st[k].classList.toggle('active',+k===n);});refreshPhotoCvs();}
+
+// Refresh photo on all canvases
+function refreshPhotoCvs(){
+  if(!photoData)return;
+  [cvs,pv,pl].forEach(function(c){drawPhotoOnCvs(c);});
 }
 
-// ====== START ======
-document.getElementById('startBtn').addEventListener('click',async function(){
-  try{
-    stream=await navigator.mediaDevices.getUserMedia({audio:true});
-    audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-    document.getElementById('startOverlay').classList.remove('active');
-    // Auto-open camera on step 1
-    startCamera();
-  }catch(e){alert('Microphone access needed!');}
-});
-
-// ====== STEP 1: CAMERA ======
-async function startCamera(){
-  try{
-    videoStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:1280},height:{ideal:720}}});
-    camVideo.srcObject=videoStream;camVideo.style.display='block';
-    document.getElementById('photoCanvas').style.display='none';
-  }catch(e){}
-}
-
-document.getElementById('camBtn').addEventListener('click',function(){
-  if(!camVideo.srcObject||camVideo.readyState<2)return;
-  // Capture photo
-  photoCanvas.width=camVideo.videoWidth;photoCanvas.height=camVideo.videoHeight;
-  photoCtx.drawImage(camVideo,0,0);
-  photoData=photoCanvas.toDataURL();
-  // Show captured image
-  document.getElementById('photoCanvas').width=photoCanvas.width;
-  document.getElementById('photoCanvas').height=photoCanvas.height;
-  var pc=document.getElementById('photoCanvas').getContext('2d');
-  pc.drawImage(photoCanvas,0,0);
-  camVideo.style.display='none';
-  document.getElementById('photoCanvas').style.display='block';
-  // Stop camera
-  if(videoStream){videoStream.getTracks().forEach(function(t){t.stop();});videoStream=null;}
-  // Go to step 2
-  goToStep(2);
-  setupLineCanvas();
-});
-
-// ====== STEP 2: LINE ======
-var lineCanvas=document.getElementById('lineCanvas'),lineCtx=lineCanvas.getContext('2d');
-var lineArea=document.getElementById('lineArea');
-
-function setupLineCanvas(){
-  lineCanvas.width=lineArea.clientWidth;lineCanvas.height=lineArea.clientHeight;
-  drawPhotoOnCanvas(lineCanvas,lineCtx);
-}
-
-function drawPhotoOnCanvas(c,ctx){
+function drawPhotoOnCvs(c){
+  c.width=c.parentElement.clientWidth;c.height=c.parentElement.clientHeight;
+  var ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);
   if(!photoData)return;
   var img=new Image();
   img.onload=function(){
     var sc=Math.min(c.width/img.width,c.height/img.height);
-    var dw=img.width*sc,dh=img.height*sc;
-    ctx.drawImage(img,(c.width-dw)/2,0,dw,dh);
+    var dw=img.width*sc,dh=img.height*sc,dx=(c.width-dw)/2,dy=(c.height-dh)/2;
+    ctx.drawImage(img,dx,dy,dw,dh);
+    // Store photo position for later use
+    c._px=dx;c._py=dy;c._pw=dw;c._ph=dh;
   };
   img.src=photoData;
 }
 
-lineCanvas.addEventListener('click',function(e){
-  var r=lineCanvas.getBoundingClientRect();
-  lineY=e.clientY-r.top;
-  drawLineOnPhoto();
+// ====== START ======
+g('startBtn').addEventListener('click',async function(){
+  try{
+    micStream=await navigator.mediaDevices.getUserMedia({audio:true});
+    audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    g('startOverlay').classList.remove('active');
+    startCam();
+  }catch(e){alert('Need mic access!');}
 });
 
-lineCanvas.addEventListener('touchstart',function(e){
-  e.preventDefault();
-  var t=e.touches[0],r=lineCanvas.getBoundingClientRect();
-  lineY=t.clientY-r.top;
+// ====== STEP 1: CAMERA ======
+async function startCam(){
+  try{
+    camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'}});
+    g('camVideo').srcObject=camStream;
+  }catch(e){}
+}
+
+g('camBtn').addEventListener('click',function(){
+  var v=g('camVideo');
+  if(v.readyState<2)return;
+  var pc=document.createElement('canvas');
+  pc.width=v.videoWidth;pc.height=v.videoHeight;
+  pc.getContext('2d').drawImage(v,0,0);
+  photoData=pc.toDataURL();photoW=pc.width;photoH=pc.height;
+  if(camStream){camStream.getTracks().forEach(function(t){t.stop();});camStream=null;}
+  go(2);
+});
+
+// ====== STEP 2: LINE ======
+cvs.addEventListener('click',function(e){
+  var r=cvs.getBoundingClientRect();lineY=(e.clientY-r.top)/r.height;
   drawLineOnPhoto();
+});
+cvs.addEventListener('touchstart',function(e){
+  e.preventDefault();var t=e.touches[0],r=cvs.getBoundingClientRect();
+  lineY=(t.clientY-r.top)/r.height;drawLineOnPhoto();
 });
 
 function drawLineOnPhoto(){
+  drawPhotoOnCvs(cvs);
   if(lineY<0)return;
-  var img=new Image();
-  img.onload=function(){
-    lineCtx.clearRect(0,0,lineCanvas.width,lineCanvas.height);
-    var sc=Math.min(lineCanvas.width/img.width,lineCanvas.height/img.height);
-    var dw=img.width*sc,dh=img.height*sc,dx=(lineCanvas.width-dw)/2;
-    lineCtx.drawImage(img,dx,0,dw,dh);
-    // Draw line
-    lineCtx.beginPath();lineCtx.moveTo(0,lineY);lineCtx.lineTo(lineCanvas.width,lineY);
-    lineCtx.strokeStyle='#f1c40f';lineCtx.lineWidth=2;lineCtx.setLineDash([6,4]);lineCtx.stroke();
-    lineCtx.setLineDash([]);
-    lineCtx.fillStyle='rgba(241,196,15,0.15)';
-    lineCtx.fillRect(0,lineY,lineCanvas.width,lineCanvas.height-lineY);
-  };
-  img.src=photoData;
+  var ctx=lineCtx;
+  ctx.beginPath();ctx.moveTo(0,lineY*cvs.height);ctx.lineTo(cvs.width,lineY*cvs.height);
+  ctx.strokeStyle='#f1c40f';ctx.lineWidth=2;ctx.setLineDash([6,4]);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='rgba(241,196,15,0.12)';
+  ctx.fillRect(0,lineY*cvs.height,cvs.width,cvs.height-lineY*cvs.height);
 }
 
-document.getElementById('lineDoneBtn').addEventListener('click',function(){
-  if(lineY<0){alert('Tap on the face to draw a line first!');return;}
-  goToStep(3);
+g('lineDoneBtn').addEventListener('click',function(){
+  if(lineY<0){g('lineDoneBtn').textContent='👆 Tap the photo first!';setTimeout(function(){g('lineDoneBtn').textContent='✅ Next: Record';},1500);return;}
+  go(3);
 });
 
 // ====== STEP 3: RECORD ======
-var recBtn=document.getElementById('recBtn'),waveHint=document.getElementById('waveHint');
-var waveCanvas=document.getElementById('waveCanvas'),waveCtx=waveCanvas.getContext('2d');
-var waveform=document.getElementById('waveform');
-
-function resizeWave(){waveCanvas.width=waveform.clientWidth;waveCanvas.height=waveform.clientHeight;}
-resizeWave();
-
-recBtn.addEventListener('click',function(){
-  if(!audioCtx||!stream)return;
-  if(playing){stopPlay();return;}
+g('recBtn').addEventListener('click',function(){
+  if(!audioCtx||!micStream)return;
+  if(playing)stopPlay();
   if(recording){stopRecord();return;}
   if(hasAudio){playAudio();return;}
   startRecord();
 });
 
 function startRecord(){
-  chunks=[];
-  recorder=new MediaRecorder(stream);
+  chunks=[];recorder=new MediaRecorder(micStream);
   recorder.ondataavailable=function(e){if(e.data.size>0)chunks.push(e.data);};
-  recorder.onstop=onRecordComplete;
-  recorder.start();
-  recording=true;
-  recBtn.className='rec-btn rec recording';recBtn.textContent='⏹️';
-  waveHint.style.display='none';
-  if(!recAnalyser){
-    var s=audioCtx.createMediaStreamSource(stream);
-    recAnalyser=audioCtx.createAnalyser();recAnalyser.fftSize=256;
-    s.connect(recAnalyser);
-  }
-  drawWave();
+  recorder.onstop=onRecDone;
+  recorder.start();recording=true;
+  g('recBtn').className='big-btn red pulse';g('recBtn').textContent='⏹️';
+  g('recStatus').textContent='🔴 Recording...';
+  g('waveHint').style.display='none';
+  if(!recAnalyser){var s=audioCtx.createMediaStreamSource(micStream);recAnalyser=audioCtx.createAnalyser();recAnalyser.fftSize=256;s.connect(recAnalyser);}
+  drawWaveViz();
 }
 
 function stopRecord(){
   if(recorder&&recorder.state!=='inactive')recorder.stop();
-  recording=false;recBtn.className='rec-btn rec';
+  recording=false;g('recBtn').className='big-btn red';
   if(animFrame){cancelAnimationFrame(animFrame);animFrame=null;}
 }
 
-async function onRecordComplete(){
+async function onRecDone(){
   var blob=new Blob(chunks,{type:'audio/webm'});
   var ab=await blob.arrayBuffer();
   var ad=await audioCtx.decodeAudioData(ab);
   audioBuf=ad.getChannelData(0);
   hasAudio=true;
-  recBtn.className='rec-btn play';recBtn.textContent='▶️';
-  document.getElementById('recDoneBtn').style.display='block';
+  g('recBtn').className='big-btn green';g('recBtn').textContent='▶️';
+  g('recStatus').textContent='✅ Got it!';
+  g('recDoneBtn').style.display='flex';
+  wvCtx.clearRect(0,0,wv.width,wv.height);
 }
 
-function drawWave(){
-  if(!recAnalyser||!recording){return;}
+function drawWaveViz(){
+  if(!recAnalyser||!recording)return;
   var d=new Uint8Array(recAnalyser.frequencyBinCount);
   recAnalyser.getByteTimeDomainData(d);
-  waveCtx.clearRect(0,0,waveCanvas.width,waveCanvas.height);
-  waveCtx.lineWidth=2;waveCtx.strokeStyle='#4ecca3';waveCtx.beginPath();
-  var sw=waveCanvas.width/d.length;
-  for(var i=0;i<d.length;i++){var v=d[i]/128.0;waveCtx.lineTo(i*sw,v*waveCanvas.height/2);}
-  waveCtx.stroke();
-  animFrame=requestAnimationFrame(drawWave);
+  wvCtx.clearRect(0,0,wv.width,wv.height);
+  wvCtx.lineWidth=2;wvCtx.strokeStyle='#4ecca3';wvCtx.beginPath();
+  var sw=wv.width/d.length;
+  for(var i=0;i<d.length;i++)wvCtx.lineTo(i*sw,(d[i]/128.0)*wv.height/2);
+  wvCtx.stroke();
+  animFrame=requestAnimationFrame(drawWaveViz);
 }
 
-document.getElementById('recDoneBtn').addEventListener('click',function(){
-  if(!hasAudio)return;
-  goToStep(4);
-  setupPlayArea();
-});
+g('recDoneBtn').addEventListener('click',function(){go(4);refreshPhotoCvs();});
 
-// ====== STEP 4: EFFECTS + PLAY ======
-var playCanvas=document.getElementById('playCanvas'),playCtx=playCanvas.getContext('2d');
-var playArea=document.getElementById('playArea');
-
-function setupPlayArea(){
-  playCanvas.width=playArea.clientWidth;playCanvas.height=playArea.clientHeight;
-  drawPlayScene(0);
-}
-
-var EFFECTS={
-  monster:{apply:function(b,sr){
-    var l=Math.floor(b.length*1.5),o=new Float32Array(l);
-    for(var i=0;i<l;i++){var si=Math.floor(i*b.length/l),f=i*b.length/l-si;o[i]=si+1<b.length?b[si]*(1-f)+b[si+1]*f:b[si];}
-    return o;
-  }},
-  chipmunk:{apply:function(b,sr){
-    var l=Math.floor(b.length*0.6),o=new Float32Array(l);
-    for(var i=0;i<l;i++){var si=Math.floor(i*b.length/l),f=i*b.length/l-si;o[i]=si+1<b.length?b[si]*(1-f)+b[si+1]*f:b[si];}
-    return o;
-  }},
-  stutter:{apply:function(b,sr){
-    var len=Math.floor(sr*0.07),o=new Float32Array(b.length);
-    for(var i=0;i<b.length;i+=len){
-      var sl=Math.min(len,b.length-i),rp=Math.floor(sl*0.25);
-      for(var r=0;r<4&&i+r*rp<b.length;r++)for(var j=0;j<rp&&i+r*rp+j<b.length;j++)o[i+r*rp+j]=b[i+j]*(1-r*0.2);
-    }
-    return o;
-  }},
-  echo:{apply:function(b,sr){
-    var d=Math.floor(sr*0.25),o=new Float32Array(b.length+d*4);o.set(b);
-    for(var i=0;i<b.length;i++){if(i+d<o.length)o[i+d]+=b[i]*0.45;if(i+d*2<o.length)o[i+d*2]+=b[i]*0.2;if(i+d*3<o.length)o[i+d*3]+=b[i]*0.08;}
-    return o;
-  }},
-  underwater:{apply:function(b,sr){
-    var o=new Float32Array(b.length);
-    for(var i=0;i<b.length;i++){var l=Math.sin(i*2*Math.PI*3/sr)*0.4+0.5;var d=Math.floor(l*300+50);o[i]=b[i]*0.5+(i>=d?b[i-d]*0.6:0)*0.5;}
-    return o;
-  }},
-  spooky:{apply:function(b,sr){
-    var o=new Float32Array(b.length);
-    for(var i=0;i<b.length;i++){var t=Math.sin(i*2*Math.PI*4/sr)*0.3+0.7;var w=Math.floor(Math.sin(i*2*Math.PI*2.5/sr)*150+200);o[i]=b[Math.max(0,i-w)]*t;}
-    return o;
-  }},
-  bubble:{apply:function(b,sr){
-    var o=new Float32Array(b.length);var sz=Math.floor(sr*0.03);
-    for(var i=0;i<b.length;i+=sz)for(var j=0;j<sz&&i+j<b.length;j++){var e=1-Math.abs(j-sz/2)/(sz/2);o[i+j]=b[i+j]*e*e;}
-    return o;
-  }},
-  radio:{apply:function(b,sr){
-    var o=new Float32Array(b.length);
-    for(var i=0;i<b.length;i++){var n=(Math.random()-0.5)*0.15;var cr=Math.round(b[i]*4)/4;o[i]=cr*0.7+n;}
-    return o;
-  }},
-  nervous:{apply:function(b,sr){
-    var o=new Float32Array(b.length);
-    for(var i=0;i<b.length;i++){var sh=Math.sin(i*2*Math.PI*20/sr)*80+Math.sin(i*2*Math.PI*15/sr)*50;var si=Math.max(0,Math.min(b.length-1,i+Math.floor(sh)));o[i]=b[si];}
-    return o;
-  }}
-};
-
-// ====== LEMON DRAWING ======
-function drawLemonOnCtx(c,ctx,cx,cy,w,h,fillAmt){
-  // Lemon rind (outer arc — top edge of the half-lemon)
-  ctx.beginPath();
-  ctx.ellipse(cx,cy,w/2,h/2,0,Math.PI,0);
-  ctx.closePath();
-  ctx.strokeStyle='#f1c40f';
-  ctx.lineWidth=Math.max(4,w*0.04);
-  ctx.stroke();
-  
-  // Inner pith
-  ctx.beginPath();
-  ctx.ellipse(cx,cy,w/2*0.85,h/2*0.85,0,Math.PI,0);
-  ctx.closePath();
-  ctx.strokeStyle='rgba(255,255,255,0.15)';
-  ctx.lineWidth=Math.max(2,w*0.025);
-  ctx.stroke();
-  
-  // Segments
-  for(var i=0;i<5;i++){
-    var a=Math.PI*(i+1)/6;
-    ctx.beginPath();ctx.moveTo(cx,cy);
-    ctx.lineTo(cx+Math.cos(a)*w/2*0.75,cy-Math.sin(a)*h/2*0.75);
-    ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=1;ctx.stroke();
-  }
-  
-  // Black fill (bottom up based on audio)
-  if(fillAmt>0.02){
-    var fh=h*fillAmt;
-    ctx.save();
-    ctx.beginPath();
-    ctx.ellipse(cx,cy+h/2-fh/2,w/2*0.7,fh/2,0,0,Math.PI*2);
-    ctx.closePath();
-    ctx.fillStyle='rgba(0,0,0,0.75)';
-    ctx.fill();
-    ctx.restore();
-  }
-}
-
-// ====== RENDER PLAY SCENE ======
-function drawPlayScene(amp){
-  playCtx.clearRect(0,0,playCanvas.width,playCanvas.height);
-  if(!photoData)return;
-  var img=new Image();
-  img.onload=function(){
-    // Draw photo — large, ~70% of play area height
-    var sc=Math.min(playCanvas.width/img.width,playCanvas.height*0.65/img.height);
-    var dw=img.width*sc,dh=img.height*sc,dx=(playCanvas.width-dw)/2,dy=playCanvas.height*0.05;
-    playCtx.drawImage(img,dx,dy,dw,dh);
-    
-    // If line is set, draw lemon
-    if(lineY>0){
-      // Map lineY from lineCanvas coords to playCanvas coords
-      // lineY was set on lineCanvas which was same size as photo
-      // Now we need to map it relative to photo position in playCanvas
-      var imgScale=dw/img.width;
-      var mappedLineY=dy+lineY*imgScale;
-      
-      var lw=dw*0.5;  // lemon width proportional to image width
-      var lh=dw*0.2;  // lemon height
-      var lx=dx+dw/2; // center of photo
-      var ly=mappedLineY+lh/2+5; // just below the line
-      
-      drawLemonOnCtx(playCanvas,playCtx,lx,ly,lw,lh,amp);
-    }
-    
-    // Play button overlay
-    if(!playing){
-      playCtx.fillStyle='rgba(78,204,163,0.2)';playCtx.font='clamp(40px,10vw,60px) sans-serif';
-      playCtx.textAlign='center';playCtx.fillText('▶️',playCanvas.width/2,playCanvas.height*0.85);
-    }
-  };
-  img.src=photoData;
-}
-
-// ====== PLAYBACK ======
-document.querySelectorAll('.effect-btn').forEach(function(btn){
-  btn.addEventListener('click',function(){
-    if(!hasAudio)return;
+// ====== EFFECTS (horizontal scroll) ======
+document.querySelectorAll('.effect-card').forEach(function(card){
+  card.addEventListener('click',function(){
     if(playing)stopPlay();
     var ef=this.dataset.effect;
-    if(currentEffect===ef){
-      currentEffect=null;
-      document.querySelectorAll('.effect-btn').forEach(function(b){b.classList.remove('active');});
-    }else{
-      document.querySelectorAll('.effect-btn').forEach(function(b){b.classList.remove('active');});
-      this.classList.add('active');
-      currentEffect=ef;
-    }
+    document.querySelectorAll('.effect-card').forEach(function(c){c.classList.remove('active');});
+    if(ef==='none'){currentEffect='none';return;}
+    this.classList.add('active');currentEffect=ef;
   });
 });
 
-document.getElementById('playBtn2').addEventListener('click',function(){
+// ====== PLAYBACK ======
+g('playBtn').addEventListener('click',function(){
   if(!hasAudio)return;
   if(playing){stopPlay();return;}
   playAudio();
@@ -485,77 +300,118 @@ document.getElementById('playBtn2').addEventListener('click',function(){
 
 function playAudio(){
   if(!audioBuf)return;
-  playing=true;
-  document.getElementById('playBtn2').textContent='⏹️ Stop';
+  playing=true;g('playBtn').textContent='⏹️ Stop';
   var sr=audioCtx.sampleRate;
   var data=audioBuf;
-  if(currentEffect&&EFFECTS[currentEffect])data=EFFECTS[currentEffect].apply(data,sr);
+  if(currentEffect&&currentEffect!=='none'&&EFFECTS[currentEffect])data=EFFECTS[currentEffect].apply(data,sr);
   var buf=audioCtx.createBuffer(1,data.length,sr);
   buf.getChannelData(0).set(data);
   var src=audioCtx.createBufferSource();src.buffer=buf;
-  var g=audioCtx.createGain();g.gain.value=0.7;
-  src.connect(g);g.connect(audioCtx.destination);
+  var gN=audioCtx.createGain();gN.gain.value=0.7;
+  src.connect(gN);gN.connect(audioCtx.destination);
   playAnalyser=audioCtx.createAnalyser();playAnalyser.fftSize=256;
-  g.connect(playAnalyser);
+  gN.connect(playAnalyser);
   src.onended=function(){stopPlay();};
   src.start();playSrc=src;
-  startLemonAnim();
+  startLemon();
 }
 
-function startLemonAnim(){
+function startLemon(){
   if(animFrame)cancelAnimationFrame(animFrame);
   function loop(){
     var amp=0;
-    if(playAnalyser){
-      var d=new Uint8Array(playAnalyser.frequencyBinCount);
-      playAnalyser.getByteTimeDomainData(d);
-      for(var i=0;i<d.length;i++){var v=Math.abs(d[i]-128)/128;if(v>amp)amp=v;}
-    }
-    drawPlayScene(Math.min(1,amp*1.5));
+    if(playAnalyser){var d=new Uint8Array(playAnalyser.frequencyBinCount);playAnalyser.getByteTimeDomainData(d);for(var i=0;i<d.length;i++){var v=Math.abs(d[i]-128)/128;if(v>amp)amp=v;}}
+    drawPlayFrame(Math.min(1,amp*1.8));
     if(playing)animFrame=requestAnimationFrame(loop);
   }
   loop();
 }
 
-function stopPlay(){
-  if(playSrc){try{playSrc.stop();}catch(e){}playSrc=null;}
-  playing=false;
-  document.getElementById('playBtn2').textContent='▶️ Play';
-  if(animFrame){cancelAnimationFrame(animFrame);animFrame=null;}
-  drawPlayScene(0);
+function drawPlayFrame(amp){
+  var c=pl;var ctx=plCtx;
+  ctx.clearRect(0,0,c.width,c.height);
+  if(!photoData||!photoW)return;
+  
+  // Draw photo centered, maintaining aspect ratio
+  var sc=Math.min(c.width/photoW,c.height*0.65/photoH);
+  var dw=photoW*sc,dh=photoH*sc,dx=(c.width-dw)/2,dy=c.height*0.04;
+  var img=new Image();
+  img.onload=function(){
+    ctx.drawImage(img,dx,dy,dw,dh);
+    
+    if(lineY>0){
+      var mappedY=dy+lineY*dh;
+      var lw=dw*0.5;var lh=dw*0.18;
+      var lx=dx+dw/2;var ly=mappedY+lh/2;
+      
+      // Lemon rind arc (top half of ellipse)
+      ctx.beginPath();ctx.ellipse(lx,ly,lw/2,lh/2,0,Math.PI,0);ctx.closePath();
+      ctx.strokeStyle='#f1c40f';ctx.lineWidth=Math.max(4,lw*0.035);ctx.stroke();
+      
+      // Inner white line
+      ctx.beginPath();ctx.ellipse(lx,ly,lw/2*0.85,lh/2*0.85,0,Math.PI,0);ctx.closePath();
+      ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.lineWidth=Math.max(2,lw*0.02);ctx.stroke();
+      
+      // Lemon segments
+      for(var i=0;i<5;i++){var a=Math.PI*(i+1)/6;ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(lx+Math.cos(a)*lw/2*0.75,ly-Math.sin(a)*lh/2*0.75);ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=1;ctx.stroke();}
+      
+      // Black fill
+      if(amp>0.02){ctx.save();ctx.beginPath();ctx.ellipse(lx,ly+lh/2-lh/2*amp,lw/2*0.65,lh/2*amp,0,0,Math.PI*2);ctx.closePath();ctx.fillStyle='rgba(0,0,0,0.75)';ctx.fill();ctx.restore();}
+    }
+    
+    // Play/Stop button on photo
+    ctx.fillStyle='rgba(0,0,0,0.15)';ctx.font=playing?'clamp(30px,8vw,50px) sans-serif':'clamp(36px,10vw,56px) sans-serif';
+    ctx.textAlign='center';ctx.fillText(playing?'⏹️':'▶️',c.width/2,dy+dh+35);
+  };
+  if(photoData){img.src=photoData;}
 }
 
-// Save
-document.getElementById('saveBtn2').addEventListener('click',function(){
+function stopPlay(){
+  if(playSrc){try{playSrc.stop();}catch(e){}playSrc=null;}
+  playing=false;g('playBtn').textContent='▶️ Play';
+  if(animFrame){cancelAnimationFrame(animFrame);animFrame=null;}
+  drawPlayFrame(0);
+}
+
+// ====== SAVE ======
+g('saveBtn').addEventListener('click',function(){
   if(!hasAudio||!audioCtx)return;
   var sr=audioCtx.sampleRate;
   var data=audioBuf;
-  if(currentEffect&&EFFECTS[currentEffect])data=EFFECTS[currentEffect].apply(data,sr);
+  if(currentEffect&&currentEffect!=='none'&&EFFECTS[currentEffect])data=EFFECTS[currentEffect].apply(data,sr);
   var ns=data.length,buf=new ArrayBuffer(44+ns*2),v=new DataView(buf);
   function w(o,s){for(var i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i));}
-  w(0,'RIFF');v.setUint32(4,36+ns*2,true);
-  w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);
-  v.setUint16(20,1,true);v.setUint16(22,1,true);
-  v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);
-  v.setUint16(32,2,true);v.setUint16(34,16,true);
-  w(36,'data');v.setUint32(40,ns*2,true);
+  w(0,'RIFF');v.setUint32(4,36+ns*2,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);
+  v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);
+  v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,ns*2,true);
   for(var i=0;i<ns;i++){var s=Math.max(-1,Math.min(1,data[i]));v.setInt16(44+i*2,s<0?s*0x8000:s*0x7FFF,true);}
   var bl=new Blob([buf],{type:'audio/wav'}),url=URL.createObjectURL(bl);
-  var a=document.createElement('a');a.href=url;a.download='VoiceMagic_'+(currentEffect||'Normal')+'.wav';
-  a.click();URL.revokeObjectURL(url);
+  var a=document.createElement('a');a.href=url;a.download='VoiceMagic_'+(currentEffect||'none')+'.wav';a.click();URL.revokeObjectURL(url);
 });
 
-// Restart
-document.getElementById('restartBtn').addEventListener('click',function(){
+// ====== RESTART ======
+g('restartBtn').addEventListener('click',function(){
   if(playing)stopPlay();
-  currentEffect=null;hasAudio=false;audioBuf=null;lineY=-1;photoData=null;
-  document.querySelectorAll('.effect-btn').forEach(function(b){b.classList.remove('active');});
-  document.getElementById('playBtn2').textContent='▶️ Play';
-  document.getElementById('recDoneBtn').style.display='none';
-  recBtn.className='rec-btn rec';recBtn.textContent='🎤';
-  goToStep(1);
-  startCamera();
+  currentEffect='none';hasAudio=false;audioBuf=null;lineY=-1;photoData=null;
+  document.querySelectorAll('.effect-card').forEach(function(c){c.classList.remove('active');});
+  g('playBtn').textContent='▶️ Play';g('recBtn').className='big-btn red';g('recBtn').textContent='🎤';
+  g('recDoneBtn').style.display='none';g('recStatus').textContent='Tap the button to record';
+  g('waveHint').style.display='flex';wvCtx.clearRect(0,0,wv.width,wv.height);
+  go(1);startCam();
 });
+
+// ====== EFFECTS ======
+var EFFECTS={
+  monster:{apply:function(b,sr){var l=Math.floor(b.length*1.5),o=new Float32Array(l);for(var i=0;i<l;i++){var si=Math.floor(i*b.length/l),f=i*b.length/l-si;o[i]=si+1<b.length?b[si]*(1-f)+b[si+1]*f:b[si];}return o;}},
+  chipmunk:{apply:function(b,sr){var l=Math.floor(b.length*0.6),o=new Float32Array(l);for(var i=0;i<l;i++){var si=Math.floor(i*b.length/l),f=i*b.length/l-si;o[i]=si+1<b.length?b[si]*(1-f)+b[si+1]*f:b[si];}return o;}},
+  stutter:{apply:function(b,sr){var len=Math.floor(sr*0.07),o=new Float32Array(b.length);for(var i=0;i<b.length;i+=len){var sl=Math.min(len,b.length-i),rp=Math.floor(sl*0.25);for(var r=0;r<4&&i+r*rp<b.length;r++)for(var j=0;j<rp&&i+r*rp+j<b.length;j++)o[i+r*rp+j]=b[i+j]*(1-r*0.2);}return o;}},
+  echo:{apply:function(b,sr){var d=Math.floor(sr*0.25),o=new Float32Array(b.length+d*4);o.set(b);for(var i=0;i<b.length;i++){if(i+d<o.length)o[i+d]+=b[i]*0.45;if(i+d*2<o.length)o[i+d*2]+=b[i]*0.2;if(i+d*3<o.length)o[i+d*3]+=b[i]*0.08;}return o;}},
+  underwater:{apply:function(b,sr){var o=new Float32Array(b.length);for(var i=0;i<b.length;i++){var l=Math.sin(i*2*Math.PI*3/sr)*0.4+0.5;var d=Math.floor(l*300+50);o[i]=b[i]*0.5+(i>=d?b[i-d]*0.6:0)*0.5;}return o;}},
+  spooky:{apply:function(b,sr){var o=new Float32Array(b.length);for(var i=0;i<b.length;i++){var t=Math.sin(i*2*Math.PI*4/sr)*0.3+0.7;var w=Math.floor(Math.sin(i*2*Math.PI*2.5/sr)*150+200);o[i]=b[Math.max(0,i-w)]*t;}return o;}},
+  bubble:{apply:function(b,sr){var o=new Float32Array(b.length),sz=Math.floor(sr*0.03);for(var i=0;i<b.length;i+=sz)for(var j=0;j<sz&&i+j<b.length;j++){var e=1-Math.abs(j-sz/2)/(sz/2);o[i+j]=b[i+j]*e*e;}return o;}},
+  radio:{apply:function(b,sr){var o=new Float32Array(b.length);for(var i=0;i<b.length;i++){var n=(Math.random()-0.5)*0.15;var cr=Math.round(b[i]*4)/4;o[i]=cr*0.7+n;}return o;}},
+  nervous:{apply:function(b,sr){var o=new Float32Array(b.length);for(var i=0;i<b.length;i++){var sh=Math.sin(i*2*Math.PI*20/sr)*80+Math.sin(i*2*Math.PI*15/sr)*50;var si=Math.max(0,Math.min(b.length-1,i+Math.floor(sh)));o[i]=b[si];}return o;}}
+};
 </script>
 </body>
 </html>
