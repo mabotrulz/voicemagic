@@ -337,8 +337,8 @@ function drawLemonFrame(amp){
   if(!pd)return;
   var img=window._pi;
   if(!img||!img.complete||img.src!==pd)return;
-  var sc=Math.min(plC.width/img.width,plC.height*0.7/img.height);
-  var dw=img.width*sc,dh=img.height*sc,dx=(plC.width-dw)/2,dy=plC.height*0.04;
+  var sc=Math.min(plC.width/img.width,plC.height/img.height);
+  var dw=img.width*sc,dh=img.height*sc,dx=(plC.width-dw)/2,dy=(plC.height-dh)/2;
   plX.drawImage(img,dx,dy,dw,dh);
   
   if(lx1>=0){
@@ -363,18 +363,19 @@ function drawLemonFrame(amp){
     plX.beginPath();
     plX.ellipse(0,0,lw/2,lh/2,0,0,Math.PI);
     plX.closePath();
-    plX.strokeStyle='#f1c40f';plX.lineWidth=Math.max(4,lw*0.035);plX.stroke();
+    plX.fillStyle='rgba(0,0,0,0.85)';plX.fill();
+    plX.strokeStyle='rgba(0,0,0,0.6)';plX.lineWidth=Math.max(3,lw*0.03);plX.stroke();
     
-    // Inner pith
+    // Inner mouth line
     plX.beginPath();
     plX.ellipse(0,0,lw/2*0.85,lh/2*0.85,0,0,Math.PI);
     plX.closePath();
-    plX.strokeStyle='rgba(255,255,255,0.15)';plX.lineWidth=Math.max(2,lw*0.02);plX.stroke();
+    plX.strokeStyle='rgba(0,0,0,0.2)';plX.lineWidth=1;plX.stroke();
     
-    // Segments
-    for(var i=0;i<5;i++){var a=Math.PI*(i+1)/6;plX.beginPath();plX.moveTo(0,0);plX.lineTo(Math.cos(a)*lw/2*0.75,Math.sin(a)*lh/2*0.75);plX.strokeStyle='rgba(255,255,255,0.06)';plX.lineWidth=1;plX.stroke();}
+    // Segments (subtle)
+    for(var i=0;i<4;i++){var a=Math.PI*(i+1)/5;plX.beginPath();plX.moveTo(0,0);plX.lineTo(Math.cos(a)*lw/2*0.7,Math.sin(a)*lh/2*0.7);plX.strokeStyle='rgba(0,0,0,0.15)';plX.lineWidth=1;plX.stroke();}
     
-    // Black fill
+    // Extra black fill
     if(amp>0.02){
       plX.save();
       plX.beginPath();
