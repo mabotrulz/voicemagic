@@ -135,14 +135,14 @@ function go(n){Object.keys(ss).forEach(function(k){ss[k].classList.toggle('activ
 function drawPhoto(c,ctx,extra){
   c.width=c.parentElement.clientWidth;c.height=c.parentElement.clientHeight;
   ctx.clearRect(0,0,c.width,c.height);
-  if(!pd){return;}
-  var img=g('_pi');
-  if(!img){var img2=new Image();img2.id='_pi';img2.src=pd;document.body.appendChild(img2);img=img2;}
-  if(!img.complete){img.onload=function(){drawPhoto(c,ctx,extra);};return;}
+  if(!pd)return;
+  var img=window._pi;
+  if(!img){img=new Image();window._pi=img;}
+  if(img.src!==pd)img.src=pd;
+  if(!img.complete||img.src!==pd){img.onload=function(){drawPhoto(c,ctx,extra);};return;}
   var sc=Math.min(c.width/img.width,c.height/img.height);
   var dw=img.width*sc,dh=img.height*sc,dx=(c.width-dw)/2,dy=(c.height-dh)/2;
   ctx.drawImage(img,dx,dy,dw,dh);
-  c._px=dx;c._py=dy;c._pw=dw;c._ph=dh;
   if(extra)extra(ctx,dx,dy,dw,dh);
 }
 
@@ -298,8 +298,8 @@ function drawLemonFrame(amp){
   plC.width=plC.parentElement.clientWidth;plC.height=plC.parentElement.clientHeight;
   plX.clearRect(0,0,plC.width,plC.height);
   if(!pd)return;
-  var img=document.getElementById('_pi');
-  if(!img||!img.complete)return;
+  var img=window._pi;
+  if(!img||!img.complete||img.src!==pd)return;
   var sc=Math.min(plC.width/img.width,plC.height*0.7/img.height);
   var dw=img.width*sc,dh=img.height*sc,dx=(plC.width-dw)/2,dy=plC.height*0.04;
   plX.drawImage(img,dx,dy,dw,dh);
@@ -374,7 +374,7 @@ g('rstb').addEventListener('click',function(){
   g('pb').textContent='▶️ Play';g('rb').className='bb red';g('rb').textContent='🎤';
   g('rdb').style.display='none';g('rs').textContent='Tap to record';
   g('wh').style.display='flex';wX.clearRect(0,0,wC.width,wC.height);
-  var img=document.getElementById('_pi');if(img)img.remove();
+  window._pi=null;
   go(1);startCam();
 });
 
