@@ -170,28 +170,65 @@ g('camB').addEventListener('click',function(){
 });
 
 // ====== LINE ======
-lC.addEventListener('click',function(e){
-  var r=lC.getBoundingClientRect();ly=(e.clientY-r.top)/r.height;
-  drawPhoto(lC,lX,function(ctx,dx,dy,dw,dh){
-    var my=dy+ly*dh;
-    ctx.beginPath();ctx.moveTo(dx,my);ctx.lineTo(dx+dw,my);
-    ctx.strokeStyle='#f1c40f';ctx.lineWidth=3;ctx.setLineDash([6,4]);ctx.stroke();ctx.setLineDash([]);
-    ctx.fillStyle='rgba(241,196,15,0.1)';ctx.fillRect(dx,my,dw,dh-my);
-  });
+var lx1=-1,ly1=-1,lx2=-1,ly2=-1,lineAngle=0,lineLen=0,lineCx=0,lineCy=0;
+
+function resetLine(){lx1=-1;ly1=-1;lx2=-1;ly2=-1;lineAngle=0;lineLen=0;lineCx=0;lineCy=0;}
+
+function setLine(x1,y1,x2,y2){
+  lx1=x1;ly1=y1;lx2=x2;ly2=y2;
+  // Normalize so lx1,ly1 is always topmost
+  if(ly1>ly2||(ly1===ly2&&lx1>lx2)){
+    var tx=lx1,ty=ly1;lx1=lx2;ly1=ly2;lx2=tx;ly2=ty;
+  }
+  lineCx=(lx1+lx2)/2;lineCy=(ly1+ly2)/2;
+  var dx=lx2-lx1,dy=ly2-ly1;
+  lineLen=Math.sqrt(dx*dx+dy*dy);
+  lineAngle=Math.atan2(dy,dx);
+}
+
+function drawLineHelper(ctx,dx,dy,dw,dh){
+  if(lx1<0)return;
+  var sx=dx+lx1*dw,sy=dy+ly1*dh,ex=dx+lx2*dw,ey=dy+ly2*dh;
+  ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(ex,ey);
+  ctx.strokeStyle='#f1c40f';ctx.lineWidth=3;ctx.setLineDash([6,4]);ctx.stroke();ctx.setLineDash([]);
+  // Highlight the mouth area below the line
+  ctx.save();
+  ctx.translate(lineCx*dw+dx,lineCy*dh+dy);
+  ctx.rotate(lineAngle);
+  ctx.fillStyle='rgba(241,196,15,0.08)';
+  ctx.fillRect(-lineLen*dw/2,0,lineLen*dw,lineLen*dw*0.15);
+  ctx.restore();
+}
+
+// Mouse
+lC.addEventListener('mousedown',function(e){
+  var r=lC.getBoundingClientRect();
+  lx1=(e.clientX-r.left)/r.width;ly1=(e.clientY-r.top)/r.height;
 });
+lC.addEventListener('mouseup',function(e){
+  if(lx1<0)return;
+  var r=lC.getBoundingClientRect();
+  lx2=(e.clientX-r.left)/r.width;ly2=(e.clientY-r.top)/r.height;
+  setLine(lx1,ly1,lx2,ly2);
+  drawPhoto(lC,lX,drawLineHelper);
+});
+
+// Touch
 lC.addEventListener('touchstart',function(e){
   e.preventDefault();var t=e.touches[0],r=lC.getBoundingClientRect();
-  ly=(t.clientY-r.top)/r.height;
-  drawPhoto(lC,lX,function(ctx,dx,dy,dw,dh){
-    var my=dy+ly*dh;
-    ctx.beginPath();ctx.moveTo(dx,my);ctx.lineTo(dx+dw,my);
-    ctx.strokeStyle='#f1c40f';ctx.lineWidth=3;ctx.setLineDash([6,4]);ctx.stroke();ctx.setLineDash([]);
-    ctx.fillStyle='rgba(241,196,15,0.1)';ctx.fillRect(dx,my,dw,dh-my);
-  });
+  lx1=(t.clientX-r.left)/r.width;ly1=(t.clientY-r.top)/r.height;
+});
+lC.addEventListener('touchend',function(e){
+  e.preventDefault();
+  if(lx1<0)return;
+  var t=e.changedTouches[0],r=lC.getBoundingClientRect();
+  lx2=(t.clientX-r.left)/r.width;ly2=(t.clientY-r.top)/r.height;
+  setLine(lx1,ly1,lx2,ly2);
+  drawPhoto(lC,lX,drawLineHelper);
 });
 
 g('ldb').addEventListener('click',function(){
-  if(ly<0){this.textContent='👆 Tap photo!';setTimeout(function(){g('ldb').textContent='✅ Next: Record';},1200);return;}
+  if(lx1<0){this.textContent='👆 Draw on photo!';setTimeout(function(){g('ldb').textContent='✅ Next: Record';},1200);return;}
   go(3);drawPhoto(pC,pX);
 });
 
@@ -304,42 +341,53 @@ function drawLemonFrame(amp){
   var dw=img.width*sc,dh=img.height*sc,dx=(plC.width-dw)/2,dy=plC.height*0.04;
   plX.drawImage(img,dx,dy,dw,dh);
   
-  if(ly>0){
-    var my=dy+ly*dh;
-    var lw=dw*0.5, lh=dw*0.2;
-    var lx=dx+dw/2;
+  if(lx1>=0){
+    // Line center in canvas pixels
+    var my=dy+lineCy*dh;
+    
+    // Calculate lemon dimensions based on line length
+    var lw=lineLen*dw*0.6, lh=lineLen*dw*0.15;
+    var lx=dx+lineCx*dw;
     
     // Draw dashed line (visible guide)
-    plX.beginPath();plX.moveTo(dx,my);plX.lineTo(dx+dw,my);
+    var sx=dx+lx1*dw,sy=dy+ly1*dh,ex=dx+lx2*dw,ey=dy+ly2*dh;
+    plX.beginPath();plX.moveTo(sx,sy);plX.lineTo(ex,ey);
     plX.strokeStyle='rgba(241,196,15,0.4)';plX.lineWidth=2;plX.setLineDash([5,4]);plX.stroke();plX.setLineDash([]);
     
-    // Lemon wedge: half-ellipse BELOW the line, flat edge ON the line
+    // Lemon wedge centered on line midpoint, rotated to match line angle
+    plX.save();
+    plX.translate(lx,my);
+    plX.rotate(lineAngle);
+    
+    // Lemon wedge: half-ellipse below the line
     plX.beginPath();
-    plX.ellipse(lx,my,lw/2,lh/2,0,0,Math.PI); // bottom half: flat edge at y=my, arc downward
+    plX.ellipse(0,0,lw/2,lh/2,0,0,Math.PI);
     plX.closePath();
     plX.strokeStyle='#f1c40f';plX.lineWidth=Math.max(4,lw*0.035);plX.stroke();
     
     // Inner pith
     plX.beginPath();
-    plX.ellipse(lx,my,lw/2*0.85,lh/2*0.85,0,0,Math.PI);
+    plX.ellipse(0,0,lw/2*0.85,lh/2*0.85,0,0,Math.PI);
     plX.closePath();
     plX.strokeStyle='rgba(255,255,255,0.15)';plX.lineWidth=Math.max(2,lw*0.02);plX.stroke();
     
     // Segments
-    for(var i=0;i<5;i++){var a=Math.PI*(i+1)/6;plX.beginPath();plX.moveTo(lx,my);plX.lineTo(lx+Math.cos(a)*lw/2*0.75,my+Math.sin(a)*lh/2*0.75);plX.strokeStyle='rgba(255,255,255,0.06)';plX.lineWidth=1;plX.stroke();}
+    for(var i=0;i<5;i++){var a=Math.PI*(i+1)/6;plX.beginPath();plX.moveTo(0,0);plX.lineTo(Math.cos(a)*lw/2*0.75,Math.sin(a)*lh/2*0.75);plX.strokeStyle='rgba(255,255,255,0.06)';plX.lineWidth=1;plX.stroke();}
     
-    // Black fill - clip to lemon shape, fill from bottom up
+    // Black fill
     if(amp>0.02){
       plX.save();
       plX.beginPath();
-      plX.ellipse(lx,my,lw/2,lh/2,0,0,Math.PI);
+      plX.ellipse(0,0,lw/2,lh/2,0,0,Math.PI);
       plX.closePath();
       plX.clip();
       var fh=lh*amp;
       plX.fillStyle='rgba(0,0,0,0.7)';
-      plX.fillRect(lx-lw/2,my+lh/2-fh,lw,fh);
+      plX.fillRect(-lw/2,lh/2-fh,lw,fh);
       plX.restore();
     }
+    
+    plX.restore();
   }
 }
 
@@ -369,7 +417,7 @@ g('svb').addEventListener('click',function(){
 // ====== RESTART ======
 g('rstb').addEventListener('click',function(){
   if(playOn)stopPlay();
-  curE='none';hasA=false;abuf=null;ly=-1;pd=null;
+  curE='none';hasA=false;abuf=null;resetLine();pd=null;
   document.querySelectorAll('.ec').forEach(function(c){c.classList.remove('active');});
   g('pb').textContent='▶️ Play';g('rb').className='bb red';g('rb').textContent='🎤';
   g('rdb').style.display='none';g('rs').textContent='Tap to record';
