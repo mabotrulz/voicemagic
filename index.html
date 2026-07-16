@@ -150,7 +150,7 @@ var gallery=[];
 
 // Steps
 var ss={0:g('s0'),1:g('s1'),2:g('s2'),3:g('s3'),4:g('s4'),g:g('sg')};
-function go(n){var s=typeof n==='string'?n:'s'+n;Object.keys(ss).forEach(function(k){ss[k].classList.toggle('active',k===s);});}
+function go(n){var s=typeof n==='string'?n:'s'+n;Object.keys(ss).forEach(function(k){ss[k].classList.toggle('active',k===s||'s'+k===s);});}
 
 function drawPhoto(c,ctx,extra){
   c.width=c.parentElement.clientWidth;c.height=c.parentElement.clientHeight;
