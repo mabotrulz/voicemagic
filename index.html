@@ -167,16 +167,15 @@ function drawPhoto(c,ctx,extra){
 }
 
 // ====== HOME ======
-g('newBtn').addEventListener('click',function(){go(1);startCam();});
+g('newBtn').addEventListener('click',async function(){
+  if(!ac)try{var s=await navigator.mediaDevices.getUserMedia({audio:true});ms=s;ac=new(window.AudioContext||window.webkitAudioContext)();}catch(e){return;}
+  go(1);startCam();
+});
 g('galBtn').addEventListener('click',function(){renderGallery();go('g');});
-g('homeBtn').addEventListener('click',function(){if(playOn)stopPlay();resetState();go(0);});
+g('homeBtn').addEventListener('click',function(){if(playOn)stopPlay();resetState();if(cs){cs.getTracks().forEach(function(t){t.stop();});cs=null;}go(0);});
 
 // ====== START (mic init) ======
-(function init(){
-  try{
-    ms=navigator.mediaDevices.getUserMedia({audio:true}).then(function(s){ms=s;ac=new(window.AudioContext||window.webkitAudioContext)();});
-  }catch(e){}
-})();
+// Mic is initialized when user clicks New Capture
 
 // ====== CAMERA ======
 async function startCam(){
@@ -316,7 +315,7 @@ function playGallery(idx){
   a.onended=function(){URL.revokeObjectURL(url);};a.play();
 }
 
-g('galBackBtn').addEventListener('click',function(){go(0);});
+g('galBackBtn').addEventListener('click',function(){if(cs){cs.getTracks().forEach(function(t){t.stop();});cs=null;}go(0);});
 
 // ====== RESET ======
 function resetState(){
