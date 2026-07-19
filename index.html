@@ -145,7 +145,7 @@ body{background:#2d1b4e;font-family:'Baloo 2','Comic Sans MS','Chalkboard SE',sy
 
 <!-- STEP 5: STICKERS -->
 <div class="step" id="s5">
-  <div class="hd"><h2>🎩 Dress it up!</h2><div class="hint">Tap a sticker, then drag it onto the face</div></div>
+  <div class="hd"><h2>🎩 Dress it up!</h2><div class="hint">Tap a sticker, drag it around — two fingers to resize and spin!</div></div>
   <div class="stage"><canvas id="oc"></canvas></div>
   <div class="fx" id="stx"></div>
   <div class="row">
@@ -215,6 +215,9 @@ function setLine(x1,y1,x2,y2){
   lineCx=(lx1+lx2)/2;lineCy=(ly1+ly2)/2;
   var dx=lx2-lx1,dy=ly2-ly1;
   lineLen=Math.sqrt(dx*dx+dy*dy);lineAngle=Math.atan2(dy,dx);
+  // normalize to [-90°, +90°] — steeper angles would flip the mouth upside down
+  if(lineAngle>Math.PI/2)lineAngle-=Math.PI;
+  if(lineAngle<-Math.PI/2)lineAngle+=Math.PI;
 }
 function defaultLine(){setLine(0.25,0.68,0.75,0.68);}
 
@@ -262,7 +265,11 @@ function renderOverlays(ctx,dx,dy,dw,dh,list){
   (list||[]).forEach(function(o){
     if(!o.img||!o.img.complete||!o.img.naturalWidth)return;
     var size=o.s*dw;
-    ctx.drawImage(o.img,dx+o.x*dw-size/2,dy+o.y*dh-size/2,size,size);
+    ctx.save();
+    ctx.translate(dx+o.x*dw,dy+o.y*dh);
+    ctx.rotate(o.r||0);
+    ctx.drawImage(o.img,-size/2,-size/2,size,size);
+    ctx.restore();
   });
 }
 // Full frame on any ctx: photo at (dx,dy,dw,dh), mouth, overlays
@@ -487,8 +494,8 @@ function stickerImg(k){
     wrap.appendChild(c);
   });
 })();
-// Drag stickers on the overlay canvas
-var oC=g('oc'),dragIdx=-1;
+// Drag stickers on the overlay canvas (1 finger = move, 2 fingers = resize + rotate)
+var oC=g('oc'),dragIdx=-1,pinch=null;
 function oEvt(e){
   var t=(e.touches&&e.touches.length)?e.touches[0]:(e.changedTouches&&e.changedTouches.length)?e.changedTouches[0]:e;
   var r=oC.getBoundingClientRect();
@@ -498,7 +505,31 @@ function oEvt(e){
   var cx=(t.clientX-r.left)/r.width*oC.width,cy=(t.clientY-r.top)/r.height*oC.height;
   return{x:(cx-geo.dx)/geo.dw,y:(cy-geo.dy)/geo.dh};
 }
+function oPinchPts(e){
+  var r=oC.getBoundingClientRect();
+  var img=window._pi;
+  if(!img||!img.complete)return null;
+  var geo=photoGeo(oC,img);
+  var pts=[];
+  for(var i=0;i<2;i++){
+    var t=e.touches[i];
+    var cx=(t.clientX-r.left)/r.width*oC.width,cy=(t.clientY-r.top)/r.height*oC.height;
+    pts.push({x:(cx-geo.dx)/geo.dw,y:(cy-geo.dy)/geo.dh});
+  }
+  return pts;
+}
 function oStart(e){
+  // second finger lands while dragging → switch to pinch (resize + rotate)
+  if(e.touches&&e.touches.length===2&&dragIdx>=0){
+    e.preventDefault();
+    var pts=oPinchPts(e);if(!pts)return;
+    var o=ovlays[dragIdx];
+    pinch={idx:dragIdx,
+      d0:Math.hypot(pts[1].x-pts[0].x,pts[1].y-pts[0].y)||0.01,
+      a0:Math.atan2(pts[1].y-pts[0].y,pts[1].x-pts[0].x),
+      s0:o.s,r0:o.r||0};
+    return;
+  }
   var p=oEvt(e);if(!p)return;
   // topmost sticker whose box contains the point
   for(var i=ovlays.length-1;i>=0;i--){
@@ -507,13 +538,27 @@ function oStart(e){
   }
 }
 function oMove(e){
+  if(pinch&&e.touches&&e.touches.length>=2){
+    e.preventDefault();
+    var pts=oPinchPts(e);if(!pts)return;
+    var d=Math.hypot(pts[1].x-pts[0].x,pts[1].y-pts[0].y)||0.01;
+    var a=Math.atan2(pts[1].y-pts[0].y,pts[1].x-pts[0].x);
+    var o=ovlays[pinch.idx];
+    o.s=Math.max(0.08,Math.min(1.5,pinch.s0*d/pinch.d0)); // stretch apart = bigger, pinch = smaller
+    o.r=pinch.r0+(a-pinch.a0);                             // rotating fingers spins the sticker
+    return;
+  }
   if(dragIdx<0)return;
   e.preventDefault();
   var p=oEvt(e);if(!p)return;
   ovlays[dragIdx].x=Math.max(0,Math.min(1,p.x));
   ovlays[dragIdx].y=Math.max(0,Math.min(1,p.y));
 }
-function oEnd(){dragIdx=-1;}
+function oEnd(e){
+  // a finger still down → end pinch, keep dragging with the remaining one
+  if(e.touches&&e.touches.length>0){pinch=null;return;}
+  dragIdx=-1;pinch=null;
+}
 oC.addEventListener('mousedown',oStart);
 oC.addEventListener('mousemove',oMove);
 oC.addEventListener('mouseup',oEnd);
@@ -571,7 +616,7 @@ g('svb').addEventListener('click',async function(){
     photo:photo64,
     effect:curE||'none',
     mouth:{x1:lx1,y1:ly1,x2:lx2,y2:ly2},
-    overlays:ovlays.map(function(o){return{k:o.k,x:o.x,y:o.y,s:o.s};}),
+    overlays:ovlays.map(function(o){return{k:o.k,x:o.x,y:o.y,s:o.s,r:+(o.r||0).toFixed(3)};}),
     audio:audio64
   });
   persist();
@@ -610,7 +655,7 @@ async function loadFromGallery(idx){
   pd=it.photo;window._pi=null;
   if(it.mouth&&it.mouth.x1!==undefined)setLine(it.mouth.x1,it.mouth.y1,it.mouth.x2,it.mouth.y2);
   else defaultLine();
-  ovlays=(it.overlays||[]).map(function(o){return{k:o.k,x:o.x,y:o.y,s:o.s,img:stickerImg(o.k)};});
+  ovlays=(it.overlays||[]).map(function(o){return{k:o.k,x:o.x,y:o.y,s:o.s,r:o.r||0,img:stickerImg(o.k)};});
   document.querySelectorAll('#esx .chip').forEach(function(x){x.classList.toggle('on',x.dataset.e===it.effect);});
   curE=it.effect;
   var ab=await (await fetch(it.audio)).arrayBuffer();
@@ -644,7 +689,7 @@ async function exportVideo(it){
     var ovImgs=[];
     for(var i=0;i<(it.overlays||[]).length;i++){
       var o=it.overlays[i];
-      ovImgs.push({k:o.k,x:o.x,y:o.y,s:o.s,img:await loadImageP('assets/stickers/'+o.k+'.png')});
+      ovImgs.push({k:o.k,x:o.x,y:o.y,s:o.s,r:o.r||0,img:await loadImageP('assets/stickers/'+o.k+'.png')});
     }
     var W=Math.min(720,img.width),H=Math.round(W*img.height/img.width);
     var cv=document.createElement('canvas');cv.width=W;cv.height=H;
