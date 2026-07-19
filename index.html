@@ -43,7 +43,7 @@ body{background:#2d1b4e;font-family:'Baloo 2','Comic Sans MS','Chalkboard SE',sy
 /* Status text under record button */
 .st{color:#fff;font-size:clamp(16px,4vw,21px);font-weight:700;text-align:center;min-height:1.4em;text-shadow:0 2px 0 rgba(0,0,0,0.2);flex-shrink:0}
 
-/* Effect chips */
+/* Effect chips / sticker palette */
 .fx{display:flex;gap:10px;overflow-x:auto;padding:6px 14px 10px;flex-shrink:0;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
 .fx::-webkit-scrollbar{display:none}
 .chip{scroll-snap-align:start;flex-shrink:0;width:clamp(78px,21vw,100px);border-radius:20px;border:4px solid rgba(255,255,255,0.35);background:rgba(255,255,255,0.16);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 8px;gap:2px;transition:all 0.15s}
@@ -67,10 +67,21 @@ body{background:#2d1b4e;font-family:'Baloo 2','Comic Sans MS','Chalkboard SE',sy
 .gal{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:10px 14px;overflow-y:auto;flex:1}
 .gi{border-radius:18px;overflow:hidden;position:relative;background:#1c1333;border:4px solid #fff;aspect-ratio:1}
 .gi img{width:100%;height:100%;object-fit:cover;display:block}
-.gi .inf{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,0.75));padding:18px 10px 8px;font-size:clamp(12px,3vw,15px);color:#fff;font-weight:700}
+.gi .inf{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,0.75));padding:18px 8px 8px;display:flex;justify-content:space-between;align-items:center}
+.gi .inf .lbl{font-size:clamp(12px,3vw,15px);color:#fff;font-weight:700}
+.gi .inf .acts{display:flex;gap:6px}
+.gi .abtn{border:2px solid #fff;border-radius:50%;width:34px;height:34px;color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.25);padding:0}
+.gi .abtn:active{transform:scale(0.9)}
+.gi .abtn.busy{opacity:0.6;pointer-events:none}
 .gi .gx{position:absolute;top:6px;right:6px;background:#d63031;border:3px solid #fff;border-radius:50%;width:34px;height:34px;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .gi .gp{position:absolute;top:6px;left:6px;background:#00b894;border:3px solid #fff;border-radius:50%;width:34px;height:34px;color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.gempty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:rgba(255,255,255,0.7);font-size:clamp(18px,4.5vw,24px);font-weight:700;gap:10px}
+.gempty{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:rgba(255,255,255,0.7);font-size:clamp(18px,4.5vw,24px);font-weight:700;gap:10px}
+
+/* Export progress overlay */
+.exp{position:absolute;inset:0;background:rgba(20,10,40,0.88);display:none;flex-direction:column;justify-content:center;align-items:center;z-index:60;gap:14px}
+.exp.on{display:flex}
+.exp .t{color:#fff;font-size:clamp(20px,5vw,28px);font-weight:800}
+.exp .s{color:rgba(255,255,255,0.8);font-size:clamp(14px,3.5vw,18px);font-weight:600}
 </style>
 </head>
 <body>
@@ -95,7 +106,7 @@ body{background:#2d1b4e;font-family:'Baloo 2','Comic Sans MS','Chalkboard SE',sy
 
 <!-- STEP 2: DRAW MOUTH LINE -->
 <div class="step" id="s2">
-  <div class="hd"><h2>👄 Draw the mouth</h2><div class="hint">Swipe across the face where the mouth goes</div></div>
+  <div class="hd"><h2>👄 Draw the mouth</h2><div class="hint">Press and stretch across the face where the mouth goes</div></div>
   <div class="stage"><canvas id="lc"></canvas></div>
   <button class="btn btn-green" id="ldb">✅ Done!</button>
 </div>
@@ -109,7 +120,7 @@ body{background:#2d1b4e;font-family:'Baloo 2','Comic Sans MS','Chalkboard SE',sy
   <button class="btn btn-green" id="rdb" style="display:none">🎵 Next!</button>
 </div>
 
-<!-- STEP 4: PLAY -->
+<!-- STEP 4: VOICE FX -->
 <div class="step" id="s4">
   <div class="hd"><h2>🎵 Make it sing!</h2><div class="hint">Pick a funny voice and press play</div></div>
   <div class="stage"><canvas id="plc"></canvas></div>
@@ -127,16 +138,45 @@ body{background:#2d1b4e;font-family:'Baloo 2','Comic Sans MS','Chalkboard SE',sy
   </div>
   <button class="btn btn-green" id="pb">▶️ Play!</button>
   <div class="row">
-    <button class="smb" id="svb">💾 Save</button>
+    <button class="smb go" id="fxNext">🎩 Next!</button>
     <button class="smb" id="homeBtn">🏠 Home</button>
+  </div>
+</div>
+
+<!-- STEP 5: STICKERS -->
+<div class="step" id="s5">
+  <div class="hd"><h2>🎩 Dress it up!</h2><div class="hint">Tap a sticker, then drag it onto the face</div></div>
+  <div class="stage"><canvas id="oc"></canvas></div>
+  <div class="fx" id="stx"></div>
+  <div class="row">
+    <button class="smb" id="undoOv">↩️ Undo</button>
+    <button class="smb go" id="ovNext">🎬 Watch!</button>
+  </div>
+</div>
+
+<!-- STEP 6: WATCH -->
+<div class="step" id="s6">
+  <div class="hd"><h2>🎬 Watch!</h2><div class="hint">Your talking creation</div></div>
+  <div class="stage"><canvas id="wc"></canvas></div>
+  <button class="btn btn-green" id="pb2">▶️ Again!</button>
+  <div class="row">
+    <button class="smb go" id="svb">💾 Save</button>
+    <button class="smb" id="editOv">🎩 Stickers</button>
+    <button class="smb" id="homeBtn2">🏠 Home</button>
   </div>
 </div>
 
 <!-- GALLERY -->
 <div class="step" id="sg">
-  <div class="hd"><h2>🖼️ My Gallery</h2><div class="hint">Your saved recordings</div></div>
+  <div class="hd"><h2>🖼️ My Gallery</h2><div class="hint">Your saved creations</div></div>
   <div class="gal" id="galGrid"></div>
   <div class="row"><button class="smb" id="galBackBtn">🏠 Back</button></div>
+</div>
+
+<!-- EXPORT PROGRESS -->
+<div class="exp" id="expOv">
+  <div class="t">🎬 Making your video…</div>
+  <div class="s" id="expSt">Please wait</div>
 </div>
 
 </div>
@@ -146,11 +186,13 @@ var ac=null,ms=null,rec=null,chunks=[],abuf=null,ablob=null;
 var recOn=false,playOn=false,hasA=false,curE='none';
 var micA=null,pA=null,ps=null;
 var pd=null,cs=null;
+var ovlays=[]; // stickers on the face: {k,x,y,s,img} (x,y,s photo-relative)
 var gallery=[];
+var LS_KEY='voicemagic_gallery';
 var g=function(i){return document.getElementById(i);};
 
 // ====== STEPS ======
-var ss={0:g('s0'),1:g('s1'),2:g('s2'),3:g('s3'),4:g('s4'),g:g('sg')};
+var ss={0:g('s0'),1:g('s1'),2:g('s2'),3:g('s3'),4:g('s4'),5:g('s5'),6:g('s6'),g:g('sg')};
 var curStep='0';
 function go(n){
   var s=typeof n==='string'?n:'s'+n;
@@ -158,7 +200,13 @@ function go(n){
   curStep=s.replace('s','');
 }
 
-// ====== MOUTH STATE ======
+function ensureAC(){
+  if(!ac)ac=new(window.AudioContext||window.webkitAudioContext)();
+  if(ac.state==='suspended')ac.resume();
+  return ac;
+}
+
+// ====== MOUTH STATE (all coords PHOTO-relative 0..1) ======
 var lx1=-1,ly1=-1,lx2=-1,ly2=-1,lineAngle=0,lineLen=0,lineCx=0,lineCy=0;
 function resetLine(){lx1=-1;ly1=-1;lx2=-1;ly2=-1;lineAngle=0;lineLen=0;lineCx=0;lineCy=0;}
 function setLine(x1,y1,x2,y2){
@@ -170,20 +218,21 @@ function setLine(x1,y1,x2,y2){
 }
 function defaultLine(){setLine(0.25,0.68,0.75,0.68);}
 
-// Draw photo fitted in canvas, then the mouth on the drawn line.
-// open01: 0 = closed lips (thin line), 1 = wide open mouth.
-function drawStage(cv,open01){
-  var ctx=cv.getContext('2d');
-  cv.width=cv.parentElement.clientWidth;cv.height=cv.parentElement.clientHeight;
-  ctx.clearRect(0,0,cv.width,cv.height);
-  if(!pd)return;
+// Photo draw geometry for a canvas (object-fit: contain)
+function photoGeo(cv,img){
+  var sc=Math.min(cv.width/img.width,cv.height/img.height);
+  var dw=img.width*sc,dh=img.height*sc;
+  return{dx:(cv.width-dw)/2,dy:(cv.height-dh)/2,dw:dw,dh:dh};
+}
+function loadPhotoImg(){
   var img=window._pi;
   if(!img){img=new Image();window._pi=img;}
   if(img.src!==pd)img.src=pd;
-  if(!img.complete||img.src!==pd){img.onload=function(){drawStage(cv,open01);};return;}
-  var sc=Math.min(cv.width/img.width,cv.height/img.height);
-  var dw=img.width*sc,dh=img.height*sc,dx=(cv.width-dw)/2,dy=(cv.height-dh)/2;
-  ctx.drawImage(img,dx,dy,dw,dh);
+  return img;
+}
+
+// ====== RENDER (shared by all steps + video export) ======
+function renderMouth(ctx,dx,dy,dw,dh,open01){
   if(lx1<0)return;
   var mx=dx+lineCx*dw,my=dy+lineCy*dh;
   var mw=Math.max(40,lineLen*dw*0.95);      // mouth width: nearly the whole drawn line
@@ -209,8 +258,33 @@ function drawStage(cv,open01){
   }
   ctx.restore();
 }
+function renderOverlays(ctx,dx,dy,dw,dh,list){
+  (list||[]).forEach(function(o){
+    if(!o.img||!o.img.complete||!o.img.naturalWidth)return;
+    var size=o.s*dw;
+    ctx.drawImage(o.img,dx+o.x*dw-size/2,dy+o.y*dh-size/2,size,size);
+  });
+}
+// Full frame on any ctx: photo at (dx,dy,dw,dh), mouth, overlays
+function renderFrame(ctx,dx,dy,dw,dh,open01,ovlist){
+  renderMouth(ctx,dx,dy,dw,dh,open01);
+  renderOverlays(ctx,dx,dy,dw,dh,ovlist);
+}
 
-// ====== ANIMATION LOOP (single loop, picks source by step) ======
+// Draw the live stage canvas (steps 2-6)
+function drawStage(cv,open01){
+  var ctx=cv.getContext('2d');
+  cv.width=cv.parentElement.clientWidth;cv.height=cv.parentElement.clientHeight;
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(!pd)return;
+  var img=loadPhotoImg();
+  if(!img.complete||img.src!==pd){img.onload=function(){drawStage(cv,open01);};return;}
+  var geo=photoGeo(cv,img);
+  ctx.drawImage(img,geo.dx,geo.dy,geo.dw,geo.dh);
+  renderFrame(ctx,geo.dx,geo.dy,geo.dw,geo.dh,open01,ovlays);
+}
+
+// ====== ANIMATION LOOP ======
 var gOpen=0; // smoothed mouth openness 0..1
 function ampOf(an){
   if(!an)return 0;
@@ -226,6 +300,8 @@ function tick(){
   if(curStep==='2'){raw=0.16+0.13*Math.sin(t/280);cv=g('lc');}
   else if(curStep==='3'){raw=ampOf(micA);cv=g('pc');}
   else if(curStep==='4'){raw=playOn?ampOf(pA):0;cv=g('plc');}
+  else if(curStep==='5'){raw=0;cv=g('oc');}
+  else if(curStep==='6'){raw=playOn?ampOf(pA):0;cv=g('wc');}
   // fast attack, smooth release — mouth snaps open, eases closed
   gOpen=raw>gOpen?raw:gOpen*0.8;
   window._mouthOpen=gOpen;
@@ -236,23 +312,25 @@ requestAnimationFrame(tick);
 
 // ====== HOME ======
 g('newBtn').addEventListener('click',async function(){
-  if(!ac){
+  if(!ms){
     try{
       ms=await navigator.mediaDevices.getUserMedia({audio:true});
-      ac=new(window.AudioContext||window.webkitAudioContext)();
+      ensureAC();
       micA=ac.createAnalyser();micA.fftSize=256;
       ac.createMediaStreamSource(ms).connect(micA);
     }catch(e){return;}
   }
-  if(ac.state==='suspended')ac.resume();
+  ensureAC();
   go(1);startCam();
 });
 g('galBtn').addEventListener('click',function(){renderGallery();go('g');});
-g('homeBtn').addEventListener('click',function(){
+function goHome(){
   if(playOn)stopPlay();resetState();
   if(cs){cs.getTracks().forEach(function(t){t.stop();});cs=null;}
   go(0);
-});
+}
+g('homeBtn').addEventListener('click',goHome);
+g('homeBtn2').addEventListener('click',goHome);
 
 // ====== CAMERA ======
 async function startCam(){
@@ -268,15 +346,51 @@ g('camB').addEventListener('click',function(){
   go(2);
 });
 
-// ====== DRAW LINE ======
+// ====== DRAW MOUTH LINE (stretch from first touch to lift) ======
 var lC=g('lc');
-function linePos(e,el){var r=el.getBoundingClientRect();return[(e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height];}
-lC.addEventListener('mousedown',function(e){var p=linePos(e,lC);lx1=p[0];ly1=p[1];});
-lC.addEventListener('mousemove',function(e){if(lx1<0||e.buttons!==1)return;var p=linePos(e,lC);setLine(lx1,ly1,p[0],p[1]);});
-lC.addEventListener('mouseup',function(e){if(lx1<0)return;var p=linePos(e,lC);setLine(lx1,ly1,p[0],p[1]);});
-lC.addEventListener('touchstart',function(e){e.preventDefault();var p=linePos(e.touches[0],lC);lx1=p[0];ly1=p[1];});
-lC.addEventListener('touchmove',function(e){e.preventDefault();if(lx1<0)return;var p=linePos(e.touches[0],lC);setLine(lx1,ly1,p[0],p[1]);});
-lC.addEventListener('touchend',function(e){e.preventDefault();if(lx1<0)return;var p=linePos(e.changedTouches[0],lC);setLine(lx1,ly1,p[0],p[1]);});
+var drawing=false,anchorX=0,anchorY=0;
+function evtPoint(e){
+  var t=(e.touches&&e.touches.length)?e.touches[0]:(e.changedTouches&&e.changedTouches.length)?e.changedTouches[0]:e;
+  return[t.clientX,t.clientY];
+}
+// canvas fraction -> photo-relative coords (null if photo not ready yet)
+function toPhotoCoords(px,py){
+  var img=window._pi;
+  if(!img||!img.complete||!img.naturalWidth)return null;
+  var geo=photoGeo(lC,img);
+  var r=lC.getBoundingClientRect();
+  var cx=(px-r.left)/r.width*lC.width,cy=(py-r.top)/r.height*lC.height;
+  return[(cx-geo.dx)/geo.dw,(cy-geo.dy)/geo.dh];
+}
+function drawStart(e){
+  e.preventDefault();
+  var p=evtPoint(e);var ph=toPhotoCoords(p[0],p[1]);
+  if(!ph)return;
+  drawing=true;anchorX=ph[0];anchorY=ph[1];
+  setLine(anchorX,anchorY,anchorX,anchorY);
+}
+function drawMove(e){
+  if(!drawing)return;
+  e.preventDefault();
+  var p=evtPoint(e);var ph=toPhotoCoords(p[0],p[1]);
+  if(!ph)return;
+  setLine(anchorX,anchorY,ph[0],ph[1]);
+}
+function drawEnd(e){
+  if(!drawing)return;
+  e.preventDefault();
+  drawing=false;
+  var p=evtPoint(e);var ph=toPhotoCoords(p[0],p[1]);
+  if(!ph){resetLine();return;}
+  setLine(anchorX,anchorY,ph[0],ph[1]);
+  if(lineLen<0.05)resetLine(); // tiny tap = clear, Done will auto-place
+}
+lC.addEventListener('mousedown',drawStart);
+lC.addEventListener('mousemove',drawMove);
+lC.addEventListener('mouseup',drawEnd);
+lC.addEventListener('touchstart',drawStart,{passive:false});
+lC.addEventListener('touchmove',drawMove,{passive:false});
+lC.addEventListener('touchend',drawEnd,{passive:false});
 g('ldb').addEventListener('click',function(){
   if(lx1<0||lineLen<0.05)defaultLine(); // kid-proof: auto-place a mouth if they just tap Done
   go(3);
@@ -301,7 +415,7 @@ function startRec(){
 function stopRec(){if(rec&&rec.state!=='inactive')rec.stop();recOn=false;g('rb').classList.remove('rec');}
 async function onRecDone(){
   var b=new Blob(chunks,{type:'audio/webm'});ablob=b;
-  var ab=await b.arrayBuffer();var d=await ac.decodeAudioData(ab);abuf=d.getChannelData(0);
+  var ab=await b.arrayBuffer();var d=await ensureAC().decodeAudioData(ab);abuf=d.getChannelData(0);
   hasA=true;
   g('rb').textContent='▶️';g('rs').textContent='✅ Got it! Tap ▶️ to hear it';
   g('rdb').style.display='flex';
@@ -309,19 +423,23 @@ async function onRecDone(){
 g('rdb').addEventListener('click',function(){if(playOn)stopPlay();go(4);});
 
 // ====== EFFECTS ======
-document.querySelectorAll('.chip').forEach(function(c){
+document.querySelectorAll('#esx .chip').forEach(function(c){
   c.addEventListener('click',function(){
     if(playOn)stopPlay();
-    document.querySelectorAll('.chip').forEach(function(x){x.classList.remove('on');});
+    document.querySelectorAll('#esx .chip').forEach(function(x){x.classList.remove('on');});
     this.classList.add('on');
     curE=this.dataset.e;
   });
 });
+g('fxNext').addEventListener('click',function(){if(playOn)stopPlay();go(5);});
 
 // ====== PLAY ======
 g('pb').addEventListener('click',function(){if(!hasA)return;if(playOn){stopPlay();return;}playAudio();});
+g('pb2').addEventListener('click',function(){if(!hasA)return;if(playOn){stopPlay();return;}playAudio();});
 function playAudio(){
-  if(!abuf)return;playOn=true;g('pb').textContent='⏹️ Stop';
+  if(!abuf)return;
+  ensureAC();
+  playOn=true;g('pb').textContent='⏹️ Stop';g('pb2').textContent='⏹️ Stop';
   var sr=ac.sampleRate;var data=abuf;
   if(curE&&curE!=='none'&&FX[curE])data=FX[curE].apply(data,sr);
   var buf=ac.createBuffer(1,data.length,sr);buf.getChannelData(0).set(data);
@@ -330,7 +448,7 @@ function playAudio(){
   pA=ac.createAnalyser();pA.fftSize=256;gn.connect(pA);
   src.onended=function(){stopPlay();};src.start();ps=src;
 }
-function stopPlay(){if(ps){try{ps.stop();}catch(e){}ps=null;}playOn=false;g('pb').textContent='▶️ Play!';}
+function stopPlay(){if(ps){try{ps.stop();}catch(e){}ps=null;}playOn=false;g('pb').textContent='▶️ Play!';g('pb2').textContent='▶️ Again!';}
 
 // ====== FX (9 effects) ======
 var FX={
@@ -345,13 +463,121 @@ var FX={
   nervous:{apply:function(b,sr){var o=new Float32Array(b.length);for(var i=0;i<b.length;i++){var sh=Math.sin(i*2*Math.PI*20/sr)*80+Math.sin(i*2*Math.PI*15/sr)*50;var si=Math.max(0,Math.min(b.length-1,i+Math.floor(sh)));o[i]=b[si];}return o;}}
 };
 
-// ====== GALLERY ======
-g('svb').addEventListener('click',function(){
+// ====== STICKERS ======
+var STICKERS=[
+  {k:'tophat',e:'🎩'},{k:'crown',e:'👑'},{k:'cap',e:'🧢'},{k:'sunhat',e:'👒'},{k:'grad',e:'🎓'},
+  {k:'glasses',e:'👓'},{k:'sunglasses',e:'🕶️'},{k:'goggles',e:'🥽'},{k:'eyes',e:'👀'},
+  {k:'bow',e:'🎀'},{k:'star',e:'⭐'},{k:'heart',e:'❤️'},{k:'flower',e:'🌸'},{k:'butterfly',e:'🦋'},
+  {k:'balloon',e:'🎈'},{k:'party',e:'🎉'}
+];
+var stickerImgCache={};
+function stickerImg(k){
+  if(!stickerImgCache[k]){var im=new Image();im.src='assets/stickers/'+k+'.png';stickerImgCache[k]=im;}
+  return stickerImgCache[k];
+}
+// Build palette
+(function(){
+  var wrap=g('stx');
+  STICKERS.forEach(function(s){
+    var c=document.createElement('div');c.className='chip';
+    c.innerHTML='<div class="e">'+s.e+'</div>';
+    c.addEventListener('click',function(){
+      ovlays.push({k:s.k,x:0.5,y:0.35,s:0.28,img:stickerImg(s.k)});
+    });
+    wrap.appendChild(c);
+  });
+})();
+// Drag stickers on the overlay canvas
+var oC=g('oc'),dragIdx=-1;
+function oEvt(e){
+  var t=(e.touches&&e.touches.length)?e.touches[0]:(e.changedTouches&&e.changedTouches.length)?e.changedTouches[0]:e;
+  var r=oC.getBoundingClientRect();
+  var img=window._pi;
+  if(!img||!img.complete)return null;
+  var geo=photoGeo(oC,img);
+  var cx=(t.clientX-r.left)/r.width*oC.width,cy=(t.clientY-r.top)/r.height*oC.height;
+  return{x:(cx-geo.dx)/geo.dw,y:(cy-geo.dy)/geo.dh};
+}
+function oStart(e){
+  var p=oEvt(e);if(!p)return;
+  // topmost sticker whose box contains the point
+  for(var i=ovlays.length-1;i>=0;i--){
+    var o=ovlays[i],half=o.s/2;
+    if(Math.abs(p.x-o.x)<half&&Math.abs(p.y-o.y)<half){dragIdx=i;e.preventDefault();return;}
+  }
+}
+function oMove(e){
+  if(dragIdx<0)return;
+  e.preventDefault();
+  var p=oEvt(e);if(!p)return;
+  ovlays[dragIdx].x=Math.max(0,Math.min(1,p.x));
+  ovlays[dragIdx].y=Math.max(0,Math.min(1,p.y));
+}
+function oEnd(){dragIdx=-1;}
+oC.addEventListener('mousedown',oStart);
+oC.addEventListener('mousemove',oMove);
+oC.addEventListener('mouseup',oEnd);
+oC.addEventListener('touchstart',oStart,{passive:false});
+oC.addEventListener('touchmove',oMove,{passive:false});
+oC.addEventListener('touchend',oEnd,{passive:false});
+g('undoOv').addEventListener('click',function(){ovlays.pop();});
+g('ovNext').addEventListener('click',function(){go(6);setTimeout(function(){playAudio();},350);});
+g('editOv').addEventListener('click',function(){if(playOn)stopPlay();go(5);});
+
+// ====== GALLERY (localStorage, components kept separate) ======
+function persist(){
+  try{localStorage.setItem(LS_KEY,JSON.stringify(gallery));}
+  catch(e){
+    // quota: drop oldest and retry once
+    if(gallery.length>1){gallery.pop();try{localStorage.setItem(LS_KEY,JSON.stringify(gallery));}catch(e2){}}
+  }
+}
+function loadPersisted(){
+  try{
+    var raw=localStorage.getItem(LS_KEY);
+    gallery=raw?JSON.parse(raw):[];
+    if(!Array.isArray(gallery))gallery=[];
+  }catch(e){gallery=[];}
+}
+loadPersisted();
+
+function blobToDataURL(b){
+  return new Promise(function(res){var r=new FileReader();r.onloadend=function(){res(r.result);};r.readAsDataURL(b);});
+}
+function downscalePhoto(dataUrl,maxDim){
+  return new Promise(function(res){
+    var img=new Image();
+    img.onload=function(){
+      var sc=Math.min(1,maxDim/Math.max(img.width,img.height));
+      if(sc>=1){res(dataUrl);return;}
+      var c=document.createElement('canvas');
+      c.width=Math.round(img.width*sc);c.height=Math.round(img.height*sc);
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+      res(c.toDataURL('image/jpeg',0.85));
+    };
+    img.onerror=function(){res(dataUrl);};
+    img.src=dataUrl;
+  });
+}
+
+g('svb').addEventListener('click',async function(){
   if(!hasA||!pd){g('svb').textContent='⚠️ Nothing!';setTimeout(function(){g('svb').textContent='💾 Save';},1200);return;}
   if(playOn)stopPlay();
-  gallery.push({id:Date.now(),photo:pd,effect:curE||'none',audio:ablob});
+  g('svb').textContent='⏳ Saving…';
+  var photo64=await downscalePhoto(pd,900);
+  var audio64=await blobToDataURL(ablob);
+  gallery.unshift({
+    id:Date.now(),
+    photo:photo64,
+    effect:curE||'none',
+    mouth:{x1:lx1,y1:ly1,x2:lx2,y2:ly2},
+    overlays:ovlays.map(function(o){return{k:o.k,x:o.x,y:o.y,s:o.s};}),
+    audio:audio64
+  });
+  persist();
   g('svb').textContent='✅ Saved!';setTimeout(function(){g('svb').textContent='💾 Save';},1500);
 });
+
 function renderGallery(){
   var grid=g('galGrid');grid.innerHTML='';
   if(gallery.length===0){
@@ -361,33 +587,172 @@ function renderGallery(){
   gallery.forEach(function(it,idx){
     var d=document.createElement('div');d.className='gi';
     var im=document.createElement('img');im.src=it.photo;d.appendChild(im);
-    var inf=document.createElement('div');inf.className='inf';inf.textContent='🎵 '+(it.effect||'none');d.appendChild(inf);
+    var inf=document.createElement('div');inf.className='inf';
+    var lbl=document.createElement('div');lbl.className='lbl';lbl.textContent='🎵 '+(it.effect||'none');
+    var acts=document.createElement('div');acts.className='acts';
+    var bsh=document.createElement('button');bsh.className='abtn';bsh.textContent='📤';bsh.title='Share video';
+    bsh.addEventListener('click',function(){shareItem(idx,bsh);});
+    var bdl=document.createElement('button');bdl.className='abtn';bdl.textContent='⬇️';bdl.title='Download video';
+    bdl.addEventListener('click',function(){downloadItem(idx,bdl);});
+    acts.appendChild(bsh);acts.appendChild(bdl);
+    inf.appendChild(lbl);inf.appendChild(acts);d.appendChild(inf);
     var bp=document.createElement('button');bp.className='gp';bp.textContent='▶️';
     bp.addEventListener('click',function(){loadFromGallery(idx);});
     d.appendChild(bp);
     var bd=document.createElement('button');bd.className='gx';bd.textContent='✕';
-    bd.addEventListener('click',function(){gallery.splice(idx,1);renderGallery();});
+    bd.addEventListener('click',function(){gallery.splice(idx,1);persist();renderGallery();});
     d.appendChild(bd);
     grid.appendChild(d);
   });
 }
 async function loadFromGallery(idx){
   var it=gallery[idx];if(!it)return;
-  pd=it.photo;defaultLine();
-  document.querySelectorAll('.chip').forEach(function(x){x.classList.toggle('on',x.dataset.e===it.effect);});
+  pd=it.photo;window._pi=null;
+  if(it.mouth&&it.mouth.x1!==undefined)setLine(it.mouth.x1,it.mouth.y1,it.mouth.x2,it.mouth.y2);
+  else defaultLine();
+  ovlays=(it.overlays||[]).map(function(o){return{k:o.k,x:o.x,y:o.y,s:o.s,img:stickerImg(o.k)};});
+  document.querySelectorAll('#esx .chip').forEach(function(x){x.classList.toggle('on',x.dataset.e===it.effect);});
   curE=it.effect;
-  var ab=await it.audio.arrayBuffer();var d=await ac.decodeAudioData(ab);abuf=d.getChannelData(0);
-  ablob=it.audio;hasA=true;go(4);
+  var ab=await (await fetch(it.audio)).arrayBuffer();
+  var d=await ensureAC().decodeAudioData(ab);
+  abuf=d.getChannelData(0);
+  ablob=await (await fetch(it.audio)).blob();
+  hasA=true;
+  go(6);
+  setTimeout(function(){playAudio();},350);
 }
 g('galBackBtn').addEventListener('click',function(){go(0);});
 
+// ====== VIDEO EXPORT (joins photo + mouth anim + stickers + voice FX) ======
+function loadImageP(src){
+  return new Promise(function(res,rej){var im=new Image();im.onload=function(){res(im);};im.onerror=rej;im.src=src;});
+}
+function pickVideoMime(){
+  var c=['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm','video/mp4'];
+  for(var i=0;i<c.length;i++){if(window.MediaRecorder&&MediaRecorder.isTypeSupported(c[i]))return c[i];}
+  return null;
+}
+var exporting=false;
+async function exportVideo(it){
+  if(exporting)throw new Error('busy');
+  var mime=pickVideoMime();
+  if(!mime)throw new Error('Video recording not supported on this browser');
+  exporting=true;
+  g('expOv').classList.add('on');
+  try{
+    var img=await loadImageP(it.photo);
+    var ovImgs=[];
+    for(var i=0;i<(it.overlays||[]).length;i++){
+      var o=it.overlays[i];
+      ovImgs.push({k:o.k,x:o.x,y:o.y,s:o.s,img:await loadImageP('assets/stickers/'+o.k+'.png')});
+    }
+    var W=Math.min(720,img.width),H=Math.round(W*img.height/img.width);
+    var cv=document.createElement('canvas');cv.width=W;cv.height=H;
+    var ctx=cv.getContext('2d');
+
+    var actx=ensureAC();
+    // resume() can hang forever without user activation (autoplay policy) — race it and proceed regardless
+    try{await Promise.race([actx.resume(),new Promise(function(r){setTimeout(r,1500);})]);}catch(e){}
+    var ab=await (await fetch(it.audio)).arrayBuffer();
+    var dec=await actx.decodeAudioData(ab);
+    var data=dec.getChannelData(0);
+    if(it.effect&&it.effect!=='none'&&FX[it.effect])data=FX[it.effect].apply(data,dec.sampleRate);
+    var buf=actx.createBuffer(1,data.length,dec.sampleRate);buf.getChannelData(0).set(data);
+
+    var src=actx.createBufferSource();src.buffer=buf;
+    var dest=actx.createMediaStreamDestination();
+    src.connect(dest);
+
+    var vs=cv.captureStream(30);
+    // only attach audio when the context actually runs (user gesture present) —
+    // a suspended context emits zero samples and can stall the muxer
+    var tracks=vs.getVideoTracks();
+    if(actx.state==='running')tracks=tracks.concat(dest.stream.getAudioTracks());
+    var combined=new MediaStream(tracks);
+    var mr=new MediaRecorder(combined,{mimeType:mime,videoBitsPerSecond:2500000});
+    var vchunks=[];
+    mr.ondataavailable=function(e){if(e.data.size>0)vchunks.push(e.data);};
+    var stopped=new Promise(function(r){mr.onstop=r;});
+    mr.start();
+
+    // swap session mouth/overlay state for the export duration
+    var saved={x1:lx1,y1:ly1,x2:lx2,y2:ly2};
+    var m=it.mouth||{x1:0.25,y1:0.68,x2:0.75,y2:0.68};
+    setLine(m.x1,m.y1,m.x2,m.y2);
+
+    var open=0,raf=0,running=true;
+    var startT=performance.now();
+    var sr2=dec.sampleRate;
+    (function loop(){
+      if(!running)return;
+      // mouth driven by the actual PCM data at wall-clock time — syncs regardless of audio clock state
+      var i0=Math.floor((performance.now()-startT)/1000*sr2);
+      var amp=0;
+      for(var i=Math.max(0,i0-512);i<Math.min(data.length,i0+512);i++){var v=Math.abs(data[i]);if(v>amp)amp=v;}
+      var raw=Math.min(1,Math.pow(amp*3.2,0.65));
+      open=raw>open?raw:open*0.8;
+      ctx.drawImage(img,0,0,W,H);
+      renderFrame(ctx,0,0,W,H,open,ovImgs);
+      raf=requestAnimationFrame(loop);
+    })();
+
+    src.start();
+    // wait for audio end — with a watchdog so a stalled audio clock can never hang the export
+    await Promise.race([
+      new Promise(function(r){src.onended=r;}),
+      new Promise(function(r){setTimeout(r,(buf.duration+4)*1000);})
+    ]);
+    // small tail so the video doesn't cut the last frame
+    await new Promise(function(r){setTimeout(r,300);});
+    running=false;cancelAnimationFrame(raf);
+    mr.stop();await stopped;
+    setLine(saved.x1,saved.y1,saved.x2,saved.y2);
+    return new Blob(vchunks,{type:mime.split(';')[0]});
+  }finally{
+    exporting=false;
+    g('expOv').classList.remove('on');
+  }
+}
+function downloadBlob(blob,name){
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download=name;
+  document.body.appendChild(a);a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},4000);
+}
+async function shareItem(idx,btn){
+  var it=gallery[idx];if(!it||exporting)return;
+  btn.classList.add('busy');btn.textContent='⏳';
+  try{
+    var blob=await exportVideo(it);
+    var ext=blob.type.indexOf('mp4')>=0?'mp4':'webm';
+    var file=new File([blob],'voicemagic-'+it.id+'.'+ext,{type:blob.type});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      await navigator.share({files:[file],title:'VoiceMagic'});
+    }else{
+      downloadBlob(blob,file.name); // fallback: just download
+    }
+  }catch(e){console.warn('share failed',e);}
+  btn.classList.remove('busy');btn.textContent='📤';
+}
+async function downloadItem(idx,btn){
+  var it=gallery[idx];if(!it||exporting)return;
+  btn.classList.add('busy');btn.textContent='⏳';
+  try{
+    var blob=await exportVideo(it);
+    var ext=blob.type.indexOf('mp4')>=0?'mp4':'webm';
+    downloadBlob(blob,'voicemagic-'+it.id+'.'+ext);
+  }catch(e){console.warn('download failed',e);}
+  btn.classList.remove('busy');btn.textContent='⬇️';
+}
+
 function resetState(){
   pd=null;abuf=null;ablob=null;hasA=false;curE='none';recOn=false;
+  ovlays=[];
   resetLine();
   g('rb').textContent='🎤';g('rb').classList.remove('rec');
   g('rs').textContent='Tap the microphone!';g('rdb').style.display='none';
-  g('pb').textContent='▶️ Play!';
-  document.querySelectorAll('.chip').forEach(function(x){x.classList.toggle('on',x.dataset.e==='none');});
+  g('pb').textContent='▶️ Play!';g('pb2').textContent='▶️ Again!';
+  document.querySelectorAll('#esx .chip').forEach(function(x){x.classList.toggle('on',x.dataset.e==='none');});
 }
 </script>
 </body>
